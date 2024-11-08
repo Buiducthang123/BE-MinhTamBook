@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\AccountStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,8 +14,19 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
+            $table->string('full_name',255); // Họ và tên
+            $table->string('email')->unique(); // Email
+            // $table->string('phone_number',11)->unique()->nullable(); // Số điện thoại
+            $table->string('company_name',255)->nullable(); // Tên công ty
+            $table->string('company_address')->nullable(); // Địa chỉ công ty
+            $table->string('company_phone_number',11)->nullable(); // Số điện thoại công ty
+            $table->string('company_tax_code',15)->nullable(); // Mã số thuế công ty
+            $table->string('contact_person_name',255)->nullable(); // Tên người liên hệ công ty
+            $table->string('representative_id_card',12)->nullable(); // Số CMND người đại diện
+            $table->string('representative_id_card_date',10)->nullable(); // Ngày cấp CMND người đại diện
+            $table->string('contact_person_position',255)->nullable(); // Chức vụ người liên hệ
+            $table->enum('status', AccountStatus::getValues())->default(AccountStatus::NOT_ACTIVE); // Trạng thái
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
