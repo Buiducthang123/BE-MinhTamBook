@@ -34,7 +34,7 @@ class AuthRepository extends BaseRepository implements AuthRepositoryInterface
             //Đặt tên token theo ngày giờ cấp phát
             if ($user) {
                 $tokenName = 'WebToken_' . now()->format('Y_m_d_H_i_s');
-                $token = $user->createToken($tokenName)->plainTextToken;
+                $token = $user->createToken($tokenName, ["*"], now()->addMonth())->plainTextToken;
                 $message = $user->status == AccountStatus::ACTIVE ? 'Đăng ký thành công' : 'Đăng ký thành công, vui lòng chờ xác nhận từ quản trị viên';
                 DB::commit();
                 return [
