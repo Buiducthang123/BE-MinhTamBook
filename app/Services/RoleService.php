@@ -13,4 +13,9 @@ class RoleService {
      {
          $this->roleRepository = $roleRepository;
      }
+
+     public function getRoleByName($name)
+     {
+         return $this->roleRepository->getRoleByName($name);
+     }
 }
