@@ -2,10 +2,12 @@
 namespace App\Repositories\Auth;
 
 use App\Enums\AccountStatus;
+use App\Mail\VerifyEmail;
 use App\Models\User;
 use App\Repositories\BaseRepository;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class AuthRepository extends BaseRepository implements AuthRepositoryInterface
 {
@@ -36,6 +38,7 @@ class AuthRepository extends BaseRepository implements AuthRepositoryInterface
                 $tokenName = 'WebToken_' . now()->format('Y_m_d_H_i_s');
                 $token = $user->createToken($tokenName, ["*"], now()->addMonth())->plainTextToken;
                 $message = $user->status == AccountStatus::ACTIVE ? 'Đăng ký thành công' : 'Đăng ký thành công, vui lòng chờ xác nhận từ quản trị viên';
+                Mail::to($user->email)->queue(new VerifyEmail($user));
                 DB::commit();
                 return [
                     'user' => $user,
@@ -70,7 +73,6 @@ class AuthRepository extends BaseRepository implements AuthRepositoryInterface
         }
         $tokenName = 'WebToken_' . now()->format('Y_m_d_H_i_s');
         $token = $user->createToken($tokenName, ["*"], now()->addMonth())->plainTextToken;
-
         return [
             'user' => $user,
             'token' => $token,
@@ -88,11 +90,11 @@ class AuthRepository extends BaseRepository implements AuthRepositoryInterface
         if ($user) {
             $result = $user->tokens()->delete();
             if ($result) {
-                return response()->json(['message' => 'Đăng xuất thành công']);
+                return response()->json();
             }
-            return response()->json(['message' => 'Đăng xuất thất bại'], 500);
+            return abort(500, 'Đăng xuất thất bại');
         }
-        return response()->json(['message' => 'Người dùng chưa đăng nhập'], 401);
+        return abort(404, 'Không tìm thấy tài khoản');
     }
 
     /**
