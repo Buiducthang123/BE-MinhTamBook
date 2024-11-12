@@ -13,8 +13,13 @@ Route::get('/user', function (Request $request) {
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum')->name('logout');
-
+Route::get('/user-me', [AuthController::class, 'user'])->middleware('auth:sanctum')->name('user');
 
 // Verify Email
 // Route::post('/send-email-verification-notification', [VerifyEmailController::class, 'sendEmailVerificationNotification'])->middleware('auth:sanctum')->name('send-email-verification-notification');
 Route::post('/email/verify/', [VerifyEmailController::class, 'verifyEmail'])->middleware(['auth:sanctum', 'signed'])->name('verification.verify');
+
+
+// Social Login
+Route::get('/login/google', [AuthController::class, 'loginGoogle'])->name('login.google');
+Route::get('/auth/google/process', [AuthController::class, 'loginGoogleCallback'])->name('login.google.callback');
