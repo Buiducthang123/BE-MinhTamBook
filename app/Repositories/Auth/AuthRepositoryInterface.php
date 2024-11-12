@@ -10,4 +10,7 @@ interface AuthRepositoryInterface extends RepositoryInterface
     public function logout();
     public function user();
     public function refresh();
+    public function loginGoogle();
+    public function loginGoogleCallback();
+    public function findUser($field);
 }

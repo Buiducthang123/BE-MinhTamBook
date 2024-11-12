@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
             $table->string('full_name',255); // Họ và tên
             $table->string('email')->unique(); // Email
+            $table->string('avatar')->nullable(); // Ảnh đại diện
+            $table->string('google_id')->nullable();
             // $table->string('phone_number',11)->unique()->nullable(); // Số điện thoại
             $table->string('company_name',255)->nullable(); // Tên công ty
             $table->string('company_address')->nullable(); // Địa chỉ công ty
