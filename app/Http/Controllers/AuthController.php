@@ -7,7 +7,6 @@ use App\Http\Requests\RegisterRequest;
 use App\Services\AuthService;
 use App\Services\RoleService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     protected $authService;
@@ -23,51 +22,49 @@ class AuthController extends Controller
 
         $email = $request->email;
         $password = $request->password;
-        $full_name = $request->full_name;
-        $company_name = $request->company_name;
-        $company_address = $request->company_address;
-        $company_phone_number = $request->company_phone_number;
-        $company_tax_code = $request->company_tax_code;
-        $contact_person_name = $request->contact_person_name;
-        $representative_id_card = $request->representative_id_card;
-        $representative_id_card_date = $request->representative_id_card_date;
-        $contact_person_position = $request->contact_person_position;
-        $role_id = null;
+        $fullName = $request->fullName;
+        $companyName = $request->companyName;
+        $companyAddress = $request->companyAddress;
+        $companyPhone_number = $request->companyPhone_number;
+        $companyTaxCode = $request->companyTaxCode;
+        $contactPersonName = $request->contactPersonName;
+        $representativeIdCard = $request->representativeIdCard;
+        $representativeIdCardDate = $request->representativeIdCardDate;
+        $contactPersonPosition = $request->contactPersonPosition;
+        $roleId = null;
         $status = AccountStatus::NOT_ACTIVE;
 
-        $isCompanyUser = false;
-        if ($company_name && $company_address && $company_phone_number && $company_tax_code && $contact_person_name && $representative_id_card && $representative_id_card_date && $contact_person_position) {
-            $isCompanyUser = true;
-        }
-        if ($isCompanyUser) {
+        if ($companyName && $companyAddress && $companyPhone_number && $companyTaxCode && $contactPersonName && $representativeIdCard && $representativeIdCardDate && $contactPersonPosition) {
             $role = $this->roleService->getRoleByName('company');
             if (!$role) {
                 return response()->json(['message' => 'Không thể tạo tài khoản, vui lòng liên hệ quản trị viên'], 404);
             }
-           $role_id = $role->id;
+           $roleId = $role->id;
         } else {
             $role = $this->roleService->getRoleByName('user');
             if (!$role) {
                 return response()->json(['message' => 'Không thể tạo tài khoản, vui lòng liên hệ quản trị viên'], 404);
             }
-            $role_id = $role->id;
+            $roleId = $role->id;
             $status = AccountStatus::ACTIVE;
         }
+
         $data = [
             'email' => $email,
             'password' => $password,
-            'full_name' => $full_name,
-            'company_name' => $company_name,
-            'company_address' => $company_address,
-            'company_phone_number' => $company_phone_number,
-            'company_tax_code' => $company_tax_code,
-            'contact_person_name' => $contact_person_name,
-            'representative_id_card' => $representative_id_card,
-            'representative_id_card_date' => $representative_id_card_date,
-            'contact_person_position' => $contact_person_position,
-            'role_id' => $role_id,
+            'full_name' => $fullName,
+            'company_name' => $companyName,
+            'company_address' => $companyAddress,
+            'company_phone_number' => $companyPhone_number,
+            'company_tax_code' => $companyTaxCode,
+            'contact_person_name' => $contactPersonName,
+            'representative_id_card' => $representativeIdCard,
+            'representative_id_card_date' => $representativeIdCardDate,
+            'contact_person_position' => $contactPersonPosition,
+            'role_id' => $roleId,
             'status' => $status
         ];
+
         $response = $this->authService->register($data);
         return response()->json($response);
     }

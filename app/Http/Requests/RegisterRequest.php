@@ -24,25 +24,19 @@ class RegisterRequest extends FormRequest
         $rules = [
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|max:255|confirmed',
-            'full_name' => 'required|max:255',
+            'fullName' => 'required|max:255',
         ];
 
-        $isCompanyUser = false;
-        if (isset($data['company_name']) || isset($data['company_address']) || isset($data['company_phone_number']) || isset($data['company_tax_code']) || isset($data['contact_person_name']) || isset($data['representative_id_card']) || isset($data['representative_id_card_date']) || isset($data['contact_person_position'])) {
-            $isCompanyUser = true;
-        }
-
-        if($isCompanyUser){
+        if(isset($this->companyName) || isset($this->companyAddress) || isset($this->companyPhoneNumber) || isset($this->companyTaxCode) || isset($this->contactPersonName) || isset($this->representativeIdCard) || isset($this->representativeIdCardDate) || isset($this->contactPersonPosition)){
             $rules =  array_merge($rules, [
-                // 'phone_number' => 'required|regex:/^0[0-9]{9}$/',
-                'company_name' => 'required|max:255',
-                'company_address' => 'required|max:255',
-                'company_phone_number' => 'required|regex:/^0[0-9]{9}$/',
-                'company_tax_code' => 'required|regex:/^[0-9]{10}$/', // Mã số thuế có 10 chữ số // ví dụ: 1234567890
-                'contact_person_name' => 'required|max:255',
-                'representative_id_card' => 'required|regex:/^[0-9]{9}$/',
-                'representative_id_card_date' => 'required|date',
-                'contact_person_position' => 'required|max:255',
+                'companyName' => 'required|max:255',
+                'companyAddress' => 'required|max:255',
+                'companyPhoneNumber' => 'required|regex:/^0[0-9]{9}$/',
+                'companyTaxCode' => 'required|regex:/^[0-9]{10}$/', // Mã số thuế có 10 chữ số // ví dụ: 1234567890
+                'contactPersonName' => 'required|max:255',
+                'representativeIdCard' => 'required|regex:/^[0-9]{9}$/', // Số CMND có 9 chữ số // ví dụ: 123456789
+                'representativeIdCardDate' => 'required|date',
+                'contactPersonPosition' => 'required|max:255',
             ]);
         }
 
@@ -58,22 +52,22 @@ class RegisterRequest extends FormRequest
             'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự',
             'password.max' => 'Mật khẩu không được quá 255 ký tự',
             'password.confirmed' => 'Mật khẩu không khớp',
-            'full_name.required' => 'Họ tên không được để trống',
-            'full_name.max' => 'Họ tên không được quá 255 ký tự',
-            'phone_number.required' => 'Số điện thoại không được để trống',
-            'phone_number.regex' => 'Số điện thoại không đúng định dạng',
-            'company_name.required' => 'Tên công ty không được để trống',
-            'company_name.max' => 'Tên công ty không được quá 255 ký tự',
-            'company_address.required' => 'Địa chỉ công ty không được để trống',
-            'company_address.max' => 'Địa chỉ công ty không được quá 255 ký tự',
-            'company_phone_number.required' => 'Số điện thoại công ty không được để trống',
-            'company_phone_number.regex' => 'Số điện thoại công ty không đúng định dạng',
-            'company_tax_code.required' => 'Mã số thuế công ty không được để trống',
-            'company_tax_code.regex' => 'Mã số thuế công ty không đúng định dạng',
-            'contact_person_name.required' => 'Tên người liên hệ không được để trống',
-            'contact_person_name.max' => 'Tên người liên hệ không được quá 255 ký tự',
-            'representative_id_card.required' => 'Số CMND không được để trống',
-            'representative_id_card.regex' => 'Số CMND không đúng định dạng',
+            'fullName.required' => 'Họ tên không được để trống',
+            'fullName.max' => 'Họ tên không được quá 255 ký tự',
+            'phoneNumber.required' => 'Số điện thoại không được để trống',
+            'phoneNumber.regex' => 'Số điện thoại không đúng định dạng',
+            'companyName.required' => 'Tên công ty không được để trống',
+            'companyName.max' => 'Tên công ty không được quá 255 ký tự',
+            'companyAddress.required' => 'Địa chỉ công ty không được để trống',
+            'companyAddress.max' => 'Địa chỉ công ty không được quá 255 ký tự',
+            'companyPhoneNumber.required' => 'Số điện thoại công ty không được để trống',
+            'companyPhoneNumber.regex' => 'Số điện thoại công ty không đúng định dạng',
+            'companyTaxCode.required' => 'Mã số thuế công ty không được để trống',
+            'companyTaxCode.regex' => 'Mã số thuế công ty không đúng định dạng',
+            'contactPersonName.required' => 'Tên người liên hệ không được để trống',
+            'contactPersonName.max' => 'Tên người liên hệ không được quá 255 ký tự',
+            'representativeIdCard.required' => 'Số CMND không được để trống',
+            'representativeIdCard.regex' => 'Số CMND không đúng định dạng',
         ];
     }
 }
