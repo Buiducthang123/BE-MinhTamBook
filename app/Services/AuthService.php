@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\User\UserCreateDTO;
 use App\Enums\AccountStatus;
 use App\Repositories\Auth\AuthRepositoryInterface;
 use App\Repositories\Role\RoleRepositoryInterface;
@@ -22,8 +23,24 @@ class AuthService
         $this->roleRepository = $roleRepository;
         $this->roleService = $roleService;
     }
-    public function register($data)
+    public function register(UserCreateDTO $data)
     {
+        $data = [
+            'email' => $data->getEmail(),
+            'password' => $data->getPassword(),
+            'full_name' => $data->getFullName(),
+            'role_id' => $data->getRoleId(),
+            'status' => $data->getStatus(),
+            'company_name' => $data->getCompanyName(),
+            'company_address' => $data->getCompanyAddress(),
+            'company_phone_number' => $data->getCompanyPhoneNumber(),
+            'company_tax_code' => $data->getCompanyTaxCode(),
+            'contact_person_name' => $data->getContactPersonName(),
+            'representative_id_card' => $data->getRepresentativeIdCard(),
+            'representative_id_card_date' => $data->getRepresentativeIdCardDate(),
+            'contact_person_position' => $data->getContactPersonPosition(),
+        ];
+
         $user = $this->authRepository->register($data);
         $tokenName = 'WebToken_' . now()->format('Y_m_d_H_i_s');
         $token = $user->createToken($tokenName, ["*"], now()->addMonth())->plainTextToken;

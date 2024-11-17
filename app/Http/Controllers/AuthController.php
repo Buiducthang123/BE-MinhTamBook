@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\User\UserCreateDTO;
 use App\Enums\AccountStatus;
 use App\Http\Requests\RegisterRequest;
 use App\Services\AuthService;
@@ -49,23 +50,9 @@ class AuthController extends Controller
             $status = AccountStatus::ACTIVE;
         }
 
-        $data = [
-            'email' => $email,
-            'password' => $password,
-            'full_name' => $fullName,
-            'company_name' => $companyName,
-            'company_address' => $companyAddress,
-            'company_phone_number' => $companyPhone_number,
-            'company_tax_code' => $companyTaxCode,
-            'contact_person_name' => $contactPersonName,
-            'representative_id_card' => $representativeIdCard,
-            'representative_id_card_date' => $representativeIdCardDate,
-            'contact_person_position' => $contactPersonPosition,
-            'role_id' => $roleId,
-            'status' => $status
-        ];
+       $userCreateDto = new UserCreateDTO($email, $password, $fullName, $companyName, $companyAddress, $companyPhone_number, $companyTaxCode, $contactPersonName, $representativeIdCard, $representativeIdCardDate, $contactPersonPosition, $roleId, $status);
 
-        $response = $this->authService->register($data);
+        $response = $this->authService->register($userCreateDto);
         return response()->json($response);
     }
 
