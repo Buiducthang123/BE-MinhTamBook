@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->text('description')->nullable();
+            $table->string('name')->unique()->comment('Tên của role');
+            $table->text('description')->nullable()->comment('Mô tả về role');
             $table->timestamps();
         });
     }
