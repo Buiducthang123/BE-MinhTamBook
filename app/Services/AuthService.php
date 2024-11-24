@@ -51,7 +51,7 @@ class AuthService
     }
     public function user()
     {
-        $user = $this->authRepository->user();
+        $user = $this->authRepository->user()->load('shippingAddresses');
         if ($user) {
             return $user;
         }
