@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyEmailController;
 use Illuminate\Http\Request;
@@ -25,4 +26,11 @@ Route::get('/login/google', [AuthController::class, 'loginGoogle'])->name('login
 Route::get('/auth/google/process', [AuthController::class, 'loginGoogleCallback'])->name('login.google.callback');
 
 //User Routes
-Route::patch('/user/update-me', [UserController::class, 'update'])->middleware('auth:sanctum')->name('user.update-me');
+Route::patch('/user/update-me', [UserController::class, 'updateMe'])->middleware('auth:sanctum')->name('user.update-me');
+Route::get('/users', [UserController::class, 'index'])->middleware(['auth:sanctum','admin'])->name('users');
+Route::get('/user/{id}', [UserController::class, 'show'])->middleware(['auth:sanctum','admin'])->name('user.show');
+Route::patch('/user/{userId}', [UserController::class, 'update'])->middleware(['auth:sanctum','admin'])->name('user.update');
+
+
+//Role Routes
+Route::get('/roles', [RoleController::class, 'getAll'])->middleware(['auth:sanctum','admin'])->name('roles');
