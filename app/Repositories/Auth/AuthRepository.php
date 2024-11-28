@@ -46,6 +46,7 @@ class AuthRepository extends BaseRepository implements AuthRepositoryInterface
         if (!$credential) {
             return abort(404, 'Mật khẩu không chính xác');
         }
+        $user = $user->load('role');
        return $user;
     }
 

@@ -31,6 +31,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable()->comment('Thời gian xác thực email');
             $table->string('password')->comment('Mật khẩu');
             $table->rememberToken();
+            $table->softDeletes()->comment('Thời gian xóa mềm');
             $table->timestamps();
         });
 

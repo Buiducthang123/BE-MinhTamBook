@@ -38,7 +38,7 @@ class AuthController extends Controller
         if ($companyName && $companyAddress && $companyPhone_number && $companyTaxCode && $contactPersonName && $representativeIdCard && $representativeIdCardDate && $contactPersonPosition) {
             $role = $this->roleService->getRoleByName('company');
             if (!$role) {
-                return response()->json(['message' => 'Không thể tạo tài khoản, vui lòng liên hệ quản trị viên'], 404);
+                return response()->json(['message' => 'Không thể tạo tài khoản, vui lòng liên hệ quản trị viên1'], 404);
             }
            $roleId = $role->id;
         } else {

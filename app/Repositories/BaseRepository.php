@@ -28,8 +28,11 @@ abstract class BaseRepository implements RepositoryInterface
         );
     }
 
-    public function getAll()
+    public function getAll($paginate=null)
     {
+        if ($paginate) {
+            return $this->model->paginate($paginate);
+        }
         return $this->model->all();
     }
 
@@ -52,7 +55,6 @@ abstract class BaseRepository implements RepositoryInterface
             $result->update($attributes);
             return $result;
         }
-
         return false;
     }
 

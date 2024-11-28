@@ -2,10 +2,31 @@
 
 namespace App\Providers;
 
+use App\Models\Book;
 use App\Repositories\Auth\AuthRepository;
 use App\Repositories\Auth\AuthRepositoryInterface;
+use App\Repositories\Author\AuthorRepository;
+use App\Repositories\Author\AuthorRepositoryInterface;
+use App\Repositories\Book\BookRepository;
+use App\Repositories\Book\BookRepositoryInterface;
+use App\Repositories\BookEditions\BookEditionsRepository;
+use App\Repositories\BookEditions\BookEditionsRepositoryInterface;
+use App\Repositories\Category\CategoryRepository;
+use App\Repositories\Category\CategoryRepositoryInterface;
+use App\Repositories\Order\OrderRepository;
+use App\Repositories\Order\OrderRepositoryInterface;
+use App\Repositories\OrderItem\OrderItemRepository;
+use App\Repositories\OrderItem\OrderItemRepositoryInterface;
+use App\Repositories\Publisher\PublisherRepository;
+use App\Repositories\Publisher\PublisherRepositoryInterface;
+use App\Repositories\Review\ReviewRepository;
+use App\Repositories\Review\ReviewRepositoryInterface;
 use App\Repositories\Role\RoleRepository;
 use App\Repositories\Role\RoleRepositoryInterface;
+use App\Repositories\ShippingAddress\ShippingAddressRepository;
+use App\Repositories\ShippingAddress\ShippingAddressRepositoryInterface;
+use App\Repositories\ShoppingCart\ShoppingCartRepository;
+use App\Repositories\ShoppingCart\ShoppingCartRepositoryInterface;
 use App\Repositories\User\UserRepository;
 use App\Repositories\User\UserRepositoryInterface;
 use Illuminate\Support\Facades\Event;
@@ -16,31 +37,26 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Register any application services.
      */
+
+    public $singletons = [
+        UserRepositoryInterface::class => UserRepository::class, // Đăng ký interface UserRepositoryInterface với class UserRepository
+        AuthRepositoryInterface::class => AuthRepository::class,
+        RoleRepositoryInterface::class => RoleRepository::class,
+        PublisherRepositoryInterface::class => PublisherRepository::class,
+        CategoryRepositoryInterface::class => CategoryRepository::class,
+        BookRepositoryInterface::class => BookRepository::class,
+        BookEditionsRepositoryInterface::class => BookEditionsRepository::class,
+        OrderRepositoryInterface::class => OrderRepository::class,
+        ShippingAddressRepositoryInterface::class => ShippingAddressRepository::class,
+        AuthorRepositoryInterface::class => AuthorRepository::class,
+        OrderItemRepositoryInterface::class => OrderItemRepository::class,
+        ReviewRepositoryInterface::class => ReviewRepository::class,
+        ShoppingCartRepositoryInterface::class => ShoppingCartRepository::class,
+    ];
+
     public function register(): void
     {
-        /**
-         * Register the User Repository
-         */
-        $this->app->singleton(
-           UserRepositoryInterface::class,
-           UserRepository::class
-        );
 
-        /**
-         * Register the Auth Repository
-         */
-        $this->app->singleton(
-            AuthRepositoryInterface::class,
-            AuthRepository::class
-        );
-
-        /**
-         * Register the Role Repository
-         */
-        $this->app->singleton(
-            RoleRepositoryInterface::class,
-            RoleRepository::class
-        );
     }
 
     /**
