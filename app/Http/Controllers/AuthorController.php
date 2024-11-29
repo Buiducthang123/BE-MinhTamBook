@@ -27,11 +27,20 @@ class AuthorController extends Controller
     public function create(AuthorRequest $request)
     {
         $data = $request->all();
-        $author = $this->authorService->create($data);
-        if (!$author) {
-            return response()->json(['message' => 'Tạo tác giả không thành công'], 500);
+        try{
+            $author = $this->authorService->create($data);
+            return response()->json([
+                'success' => true,
+                'message' => 'Tạo mới tác giả thành công',
+                'data' => $author,
+            ]);
         }
-        return response()->json($author);
+        catch(\Exception $e){
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
+        }
     }
 
     public function update(AuthorRequest $request, $id)
