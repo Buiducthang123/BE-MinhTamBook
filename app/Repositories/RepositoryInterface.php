@@ -8,7 +8,7 @@ interface RepositoryInterface
      * Get all
      * @return mixed
      */
-    public function getAll($paginate);
+    public function getAll($paginate = null, $with = []);
 
     /**
      * Get one

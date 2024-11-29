@@ -19,14 +19,14 @@ class AuthController extends Controller
         $this->roleService = $roleService;
     }
 
-    public function register(RegisterRequest $request){
+      public function register(RegisterRequest $request){
 
         $email = $request->email;
         $password = $request->password;
         $fullName = $request->fullName;
         $companyName = $request->companyName;
         $companyAddress = $request->companyAddress;
-        $companyPhone_number = $request->companyPhone_number;
+        $companyPhoneNumber = $request->companyPhoneNumber;
         $companyTaxCode = $request->companyTaxCode;
         $contactPersonName = $request->contactPersonName;
         $representativeIdCard = $request->representativeIdCard;
@@ -35,7 +35,7 @@ class AuthController extends Controller
         $roleId = null;
         $status = AccountStatus::NOT_ACTIVE;
 
-        if ($companyName && $companyAddress && $companyPhone_number && $companyTaxCode && $contactPersonName && $representativeIdCard && $representativeIdCardDate && $contactPersonPosition) {
+        if ($companyName && $companyAddress && $companyPhoneNumber && $companyTaxCode && $contactPersonName && $representativeIdCard && $representativeIdCardDate && $contactPersonPosition) {
             $role = $this->roleService->getRoleByName('company');
             if (!$role) {
                 return response()->json(['message' => 'Không thể tạo tài khoản, vui lòng liên hệ quản trị viên1'], 404);
@@ -50,9 +50,23 @@ class AuthController extends Controller
             $status = AccountStatus::ACTIVE;
         }
 
-       $userCreateDto = new UserCreateDTO($email, $password, $fullName, $companyName, $companyAddress, $companyPhone_number, $companyTaxCode, $contactPersonName, $representativeIdCard, $representativeIdCardDate, $contactPersonPosition, $roleId, $status);
+        $data = [
+            'email' => $email,
+            'password' => $password,
+            'full_name' => $fullName,
+            'company_name' => $companyName,
+            'company_address' => $companyAddress,
+            'company_phone_number' => $companyPhoneNumber,
+            'company_tax_code' => $companyTaxCode,
+            'contact_person_name' => $contactPersonName,
+            'representative_id_card' => $representativeIdCard,
+            'representative_id_card_date' => $representativeIdCardDate,
+            'contact_person_position' => $contactPersonPosition,
+            'role_id' => $roleId,
+            'status' => $status
+        ];
 
-        $response = $this->authService->register($userCreateDto);
+        $response = $this->authService->register($data);
         return response()->json($response);
     }
 

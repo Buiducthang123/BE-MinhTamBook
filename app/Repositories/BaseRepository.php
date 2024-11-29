@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Repositories\RepositoryInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 abstract class BaseRepository implements RepositoryInterface
 {
@@ -28,12 +29,16 @@ abstract class BaseRepository implements RepositoryInterface
         );
     }
 
-    public function getAll($paginate=null)
+    public function getAll($paginate = null, $with = [])
     {
-        if ($paginate) {
-            return $this->model->paginate($paginate);
+        $query = $this->model;
+        if (!empty($with)) {
+            $query = $query->with($with);
         }
-        return $this->model->all();
+        if ($paginate) {
+            return $query->paginate($paginate);
+        }
+        return $query->get();
     }
 
     public function find($id)
@@ -45,28 +50,47 @@ abstract class BaseRepository implements RepositoryInterface
 
     public function create($attributes = [])
     {
-        return $this->model->create($attributes);
+       try {
+            $result = $this->model->create($attributes);
+            return $result;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     public function update($id, $attributes = [])
     {
         $result = $this->find($id);
-        if ($result) {
-            $result->update($attributes);
-            return $result;
+
+        if(!$result) {
+            throw new ModelNotFoundException('Không tìm thấy dữ liệu có id = ' . $id);
         }
-        return false;
+        try {
+            $isUpdated = $result->update($attributes);
+            if (!$isUpdated) {
+                throw new \Exception('Cập nhật không thành công cho bản ghi id = ' . $id);
+            }
+            return $result;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 
     public function delete($id)
     {
         $result = $this->find($id);
-        if ($result) {
-            $result->delete();
 
-            return true;
+        if(!$result) {
+            throw new ModelNotFoundException('Không tìm thấy dữ liệu có id = ' . $id);
         }
-
-        return false;
+        try {
+            $isDeleted = $result->delete();
+            if (!$isDeleted) {
+                throw new \Exception('Xóa không thành công cho bản ghi id = ' . $id);
+            }
+            return $result;
+        } catch (\Exception $e) {
+            throw $e;
+        }
     }
 }

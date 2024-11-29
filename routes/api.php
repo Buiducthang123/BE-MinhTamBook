@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\PublisherController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyEmailController;
@@ -34,3 +36,21 @@ Route::patch('/user/{userId}', [UserController::class, 'update'])->middleware(['
 
 //Role Routes
 Route::get('/roles', [RoleController::class, 'getAll'])->middleware(['auth:sanctum','admin'])->name('roles');
+
+
+//Author Routes
+Route::prefix('authors')->middleware(['auth:sanctum','admin'])->group(function(){
+    Route::get('/', [AuthorController::class, 'index'])->name('authors.all');
+    Route::post('/', [AuthorController::class, 'create'])->name('authors.create');
+    Route::patch('/{id}', action: [AuthorController::class, 'update'])->name('authors.update');
+    Route::delete('/{id}', [AuthorController::class, 'delete'])->name('authors.delete');
+});
+
+
+//Publisher Routes
+Route::prefix('publishers')->middleware(['auth:sanctum','admin'])->group(function(){
+    Route::get('/', [PublisherController::class, 'index'])->name('publishers.all');
+    Route::post('/', [PublisherController::class, 'create'])->name('publishers.create');
+    Route::patch('/{id}', action: [PublisherController::class, 'update'])->name('publishers.update');
+    Route::delete('/{id}', [PublisherController::class, 'delete'])->name('publishers.delete');
+});
