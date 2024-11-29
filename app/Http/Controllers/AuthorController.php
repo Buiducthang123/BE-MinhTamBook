@@ -36,33 +36,35 @@ class AuthorController extends Controller
 
     public function update(AuthorRequest $request, $id)
     {
-        $data = $request->all();
-        $author = $this->authorService->update($id, $data);
-        if (!$author) {
-            return response()->json(['message' => 'Cập nhật tác giả không thành công'], 500);
+        try {
+            $author = $this->authorService->update($id, $request->all());
+            return response()->json([
+                'success' => true,
+                'message' => 'Cập nhật thành công',
+                'data' => $author,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 400);
         }
-        return response()->json($author);
     }
 
     public function delete($id)
     {
         try {
-            $this->authorService->delete($id);
+            $author = $this->authorService->delete($id);
             return response()->json([
                 'success' => true,
-                'message' => 'Xóa tác giả thành công',
-            ], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Không tìm thấy tác giả',
-            ], 404);
+                'message' => 'Xóa thành công',
+                'data' => $author,
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Xóa tác giả không thành công',
-                'error' => $e->getMessage(),
-            ], 500);
+                'message' => $e->getMessage(),
+            ], 400);
         }
     }
 }
