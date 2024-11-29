@@ -2,24 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\DTO\User\UserCreateDTO;
 use App\Enums\AccountStatus;
 use App\Http\Requests\RegisterRequest;
 use App\Services\AuthService;
 use App\Services\RoleService;
 use Illuminate\Http\Request;
+
 class AuthController extends Controller
 {
     protected $authService;
     protected $roleService;
 
-    public function __construct(AuthService $authService,RoleService $roleService)
+    public function __construct(AuthService $authService, RoleService $roleService)
     {
         $this->authService = $authService;
         $this->roleService = $roleService;
     }
 
-      public function register(RegisterRequest $request){
+    public function register(RegisterRequest $request)
+    {
 
         $email = $request->email;
         $password = $request->password;
@@ -40,7 +41,7 @@ class AuthController extends Controller
             if (!$role) {
                 return response()->json(['message' => 'Không thể tạo tài khoản, vui lòng liên hệ quản trị viên1'], 404);
             }
-           $roleId = $role->id;
+            $roleId = $role->id;
         } else {
             $role = $this->roleService->getRoleByName('user');
             if (!$role) {
@@ -63,25 +64,28 @@ class AuthController extends Controller
             'representative_id_card_date' => $representativeIdCardDate,
             'contact_person_position' => $contactPersonPosition,
             'role_id' => $roleId,
-            'status' => $status
+            'status' => $status,
         ];
 
         $response = $this->authService->register($data);
         return response()->json($response);
     }
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $data = $request->all();
         $response = $this->authService->login($data);
         return response()->json($response);
     }
 
-    public function logout(){
+    public function logout()
+    {
         $response = $this->authService->logout();
         return response()->json($response);
     }
 
-    public function user(){
+    public function user()
+    {
         $response = $this->authService->user();
         return response()->json($response);
     }
