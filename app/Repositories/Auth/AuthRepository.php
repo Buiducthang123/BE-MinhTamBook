@@ -1,7 +1,6 @@
 <?php
 namespace App\Repositories\Auth;
 
-use App\Enums\AccountStatus;
 use App\Mail\VerifyEmail;
 use App\Models\User;
 use App\Repositories\BaseRepository;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\User\UserCreateDTO;
 use App\Enums\AccountStatus;
 use App\Http\Requests\RegisterRequest;
 use App\Services\AuthService;
@@ -18,7 +19,7 @@ class AuthController extends Controller
         $this->roleService = $roleService;
     }
 
-    public function register(RegisterRequest $request){
+      public function register(RegisterRequest $request){
 
         $email = $request->email;
         $password = $request->password;
