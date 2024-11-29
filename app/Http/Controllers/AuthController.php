@@ -25,7 +25,7 @@ class AuthController extends Controller
         $fullName = $request->fullName;
         $companyName = $request->companyName;
         $companyAddress = $request->companyAddress;
-        $companyPhone_number = $request->companyPhone_number;
+        $companyPhoneNumber = $request->companyPhoneNumber;
         $companyTaxCode = $request->companyTaxCode;
         $contactPersonName = $request->contactPersonName;
         $representativeIdCard = $request->representativeIdCard;
@@ -34,7 +34,7 @@ class AuthController extends Controller
         $roleId = null;
         $status = AccountStatus::NOT_ACTIVE;
 
-        if ($companyName && $companyAddress && $companyPhone_number && $companyTaxCode && $contactPersonName && $representativeIdCard && $representativeIdCardDate && $contactPersonPosition) {
+        if ($companyName && $companyAddress && $companyPhoneNumber && $companyTaxCode && $contactPersonName && $representativeIdCard && $representativeIdCardDate && $contactPersonPosition) {
             $role = $this->roleService->getRoleByName('company');
             if (!$role) {
                 return response()->json(['message' => 'Không thể tạo tài khoản, vui lòng liên hệ quản trị viên1'], 404);
@@ -55,7 +55,7 @@ class AuthController extends Controller
             'full_name' => $fullName,
             'company_name' => $companyName,
             'company_address' => $companyAddress,
-            'company_phone_number' => $companyPhone_number,
+            'company_phone_number' => $companyPhoneNumber,
             'company_tax_code' => $companyTaxCode,
             'contact_person_name' => $contactPersonName,
             'representative_id_card' => $representativeIdCard,
