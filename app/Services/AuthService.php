@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Services;
-
-use App\DTO\User\UserCreateDTO;
 use App\Enums\AccountStatus;
 use App\Repositories\Auth\AuthRepositoryInterface;
 use App\Repositories\Role\RoleRepositoryInterface;
@@ -23,31 +21,15 @@ class AuthService
         $this->roleRepository = $roleRepository;
         $this->roleService = $roleService;
     }
-    public function register(UserCreateDTO $data)
+    public function register($data)
     {
-        $data = [
-            'email' => $data->getEmail(),
-            'password' => $data->getPassword(),
-            'full_name' => $data->getFullName(),
-            'role_id' => $data->getRoleId(),
-            'status' => $data->getStatus(),
-            'company_name' => $data->getCompanyName(),
-            'company_address' => $data->getCompanyAddress(),
-            'company_phone_number' => $data->getCompanyPhoneNumber(),
-            'company_tax_code' => $data->getCompanyTaxCode(),
-            'contact_person_name' => $data->getContactPersonName(),
-            'representative_id_card' => $data->getRepresentativeIdCard(),
-            'representative_id_card_date' => $data->getRepresentativeIdCardDate(),
-            'contact_person_position' => $data->getContactPersonPosition(),
-        ];
-
         $user = $this->authRepository->register($data);
-        $tokenName = 'WebToken_' . now()->format('Y_m_d_H_i_s');
-        $token = $user->createToken($tokenName, ["*"], now()->addMonth())->plainTextToken;
+        // $tokenName = 'WebToken_' . now()->format('Y_m_d_H_i_s');
+        // $token = $user->createToken($tokenName, ["*"], now()->addMonth())->plainTextToken;
         $message = $user->status == AccountStatus::ACTIVE ? 'Đăng ký thành công' : 'Đăng ký thành công, vui lòng chờ xác nhận từ quản trị viên';
         return [
             'user' => $user,
-            'token' => $token,
+            // 'token' => $token,
             'message' => $message,
         ];
     }
