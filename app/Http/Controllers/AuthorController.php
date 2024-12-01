@@ -20,7 +20,8 @@ class AuthorController extends Controller
     {
         $paginate = $request->paginate ?? null;
         $with = $request->with ?? [];
-        $authors = $this->authorService->getAll($paginate, $with);
+        $search = $request->search ?? null;
+        $authors = $this->authorService->getAll($paginate, $with, $search);
         return response()->json($authors);
     }
 
@@ -74,6 +75,22 @@ class AuthorController extends Controller
                 'success' => false,
                 'message' => $e->getMessage(),
             ], 400);
+        }
+    }
+
+    public function show($id, Request $request)
+    {
+        try {
+            $author = $this->authorService->show($id, $request->all());
+            return response()->json([
+                'success' => true,
+                'data' => $author,
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Không tìm thấy tác giả',
+            ], 404);
         }
     }
 }

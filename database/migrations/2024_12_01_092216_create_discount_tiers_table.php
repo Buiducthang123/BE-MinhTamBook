@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('order_items', function (Blueprint $table) {
+        Schema::create('discount_tiers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->foreignId('book_id')->constrained('books')->onDelete('cascade');
-            $table->integer('quantity')->default(1)->comment('Số lượng');
-            $table->decimal('price', 10, 2)->comment('Giá');
+            $table->tinyInteger('minimum_quantity')->comment('Số lượng tối thiểu');
+            $table->decimal('discount_rate', 5, 2)->comment('Tỷ lệ giảm giá');
+            $table->dateTime('start_date')->comment('Ngày bắt đầu');
+            $table->dateTime('end_date')->comment('Ngày kết thúc');
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('order_items');
+        Schema::dropIfExists('discount_tiers');
     }
 };

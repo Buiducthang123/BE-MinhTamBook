@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('shipping_addresses', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->comment('ID của user');
-            $table->string('receiver_name', 255)->comment('Tên người nhận');
+            $table->string('receiver_name', length: 255)->comment('Tên người nhận');
             $table->string('receiver_phone_number', 11)->comment('Số điện thoại người nhận');
             $table->json('province')->comment('Tỉnh/Thành phố');
             $table->json('district')->comment('Quận/Huyện');

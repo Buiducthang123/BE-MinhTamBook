@@ -4,16 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ShoppingCart extends Model
+class BookPurchase extends Model
 {
     protected $fillable = [
         'user_id',
         'book_id',
         'quantity',
+        'purchase_price',
+        'purchase_date',
     ];
 
-    public function user()
+    public function book()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Book::class);
     }
 }
