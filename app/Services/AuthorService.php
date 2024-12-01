@@ -11,8 +11,8 @@ class AuthorService{
         $this->authorRepository = $authorRepository;
     }
 
-    public function getAll($paginate = null, $with = []){
-        return $this->authorRepository->getAll($paginate, $with);
+    public function getAll($paginate = null, $with = [], $search = null){
+        return $this->authorRepository->getAll($paginate, $with, $search);
     }
 
     public function create($data){
@@ -32,5 +32,12 @@ class AuthorService{
     {
         return $this->authorRepository->delete($id);
     }
+
+    public function show($id, $data = [])
+    {
+        $with = $data['with'] ?? [];
+        return $this->authorRepository->show($id, $with);
+    }
+
 
 }

@@ -23,7 +23,7 @@ class PublisherRequest extends FormRequest
     {
         $rules = [
             'name' => 'required|string|max:255',
-            'description' => 'string',
+            'description' => 'nullable|string',
             'avatar' => 'nullable|string|max:2048',
         ];
 

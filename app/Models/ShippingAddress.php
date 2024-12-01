@@ -17,6 +17,32 @@ class ShippingAddress extends Model
         'is_default'
     ];
 
+    public function casts()
+    {
+        return [
+            'province' => 'array',
+            'district' => 'array',
+            'ward' => 'array',
+            'is_default' => 'boolean'
+        ];
+    }
+
+    public function setProvinceAttribute($value)
+    {
+        $this->attributes['province'] = json_encode($value);
+    }
+
+
+    public function setDistrictAttribute($value)
+    {
+        $this->attributes['district'] = json_encode($value);
+    }
+
+    public function setWardAttribute($value)
+    {
+        $this->attributes['ward'] = json_encode($value);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\PublisherController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ShippingAddressController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyEmailController;
 use Illuminate\Http\Request;
@@ -41,6 +43,7 @@ Route::get('/roles', [RoleController::class, 'getAll'])->middleware(['auth:sanct
 //Author Routes
 Route::prefix('authors')->middleware(['auth:sanctum','admin'])->group(function(){
     Route::get('/', [AuthorController::class, 'index'])->name('authors.all');
+    Route::get('/{id}', [AuthorController::class, 'show'])->name('authors.show');
     Route::post('/', [AuthorController::class, 'create'])->name('authors.create');
     Route::patch('/{id}', action: [AuthorController::class, 'update'])->name('authors.update');
     Route::delete('/{id}', [AuthorController::class, 'delete'])->name('authors.delete');
@@ -53,4 +56,18 @@ Route::prefix('publishers')->middleware(['auth:sanctum','admin'])->group(functio
     Route::post('/', [PublisherController::class, 'create'])->name('publishers.create');
     Route::patch('/{id}', action: [PublisherController::class, 'update'])->name('publishers.update');
     Route::delete('/{id}', [PublisherController::class, 'delete'])->name('publishers.delete');
+});
+
+//Book Routes
+
+Route::prefix('books')->middleware(['auth:sanctum','admin'])->group(function(){
+    Route::post('/', [BookController::class, 'create'])->name('books.create');
+});
+
+
+//Shipping Address Routes
+Route::prefix('shipping-addresses')->middleware('auth:sanctum')->group(function(){
+    Route::post('/', [ShippingAddressController::class, 'create'])->name('shipping-addresses.create');
+    Route::patch('/{id}', [ShippingAddressController::class, 'update'])->name('shipping-addresses.update');
+    Route::delete('/{id}', [ShippingAddressController::class, 'delete'])->name('shipping-addresses.delete');
 });

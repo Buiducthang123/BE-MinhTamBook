@@ -9,8 +9,6 @@ use App\Repositories\Author\AuthorRepository;
 use App\Repositories\Author\AuthorRepositoryInterface;
 use App\Repositories\Book\BookRepository;
 use App\Repositories\Book\BookRepositoryInterface;
-use App\Repositories\BookEditions\BookEditionsRepository;
-use App\Repositories\BookEditions\BookEditionsRepositoryInterface;
 use App\Repositories\Category\CategoryRepository;
 use App\Repositories\Category\CategoryRepositoryInterface;
 use App\Repositories\Order\OrderRepository;
@@ -45,7 +43,6 @@ class AppServiceProvider extends ServiceProvider
         PublisherRepositoryInterface::class => PublisherRepository::class,
         CategoryRepositoryInterface::class => CategoryRepository::class,
         BookRepositoryInterface::class => BookRepository::class,
-        BookEditionsRepositoryInterface::class => BookEditionsRepository::class,
         OrderRepositoryInterface::class => OrderRepository::class,
         ShippingAddressRepositoryInterface::class => ShippingAddressRepository::class,
         AuthorRepositoryInterface::class => AuthorRepository::class,
