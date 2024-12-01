@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Book;
 use App\Models\Category;
 use App\Models\Publisher;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
 
@@ -24,6 +23,20 @@ class BookSeeder extends Seeder
             Book::create([
                 'category_id' => $faker->randomElement($categoryIds),
                 'publisher_id' => $faker->randomElement($publisherIds),
+                'promotion_id' => null, // Assuming no promotions for now
+                'title' => $faker->sentence(3),
+                'slug' => $faker->slug,
+                'ISBN' => $faker->unique()->isbn13,
+                'cover_image' => $faker->imageUrl(640, 480, 'books', true),
+                'thumbnail' => json_encode([$faker->imageUrl(640, 480, 'books', true), $faker->imageUrl(640, 480, 'books', true)]),
+                'description' => $faker->paragraph,
+                'is_sale' => $faker->boolean,
+                'price' => $faker->randomFloat(2, 10, 100),
+                'discount' => $faker->randomFloat(2, 0, 30),
+                'pages' => $faker->numberBetween(100, 500),
+                'weight' => $faker->randomFloat(2, 0.5, 2),
+                'dimension_length' => $faker->randomFloat(2, 10, 30),
+                'dimension_width' => $faker->randomFloat(2, 10, 30),
             ]);
         }
     }
