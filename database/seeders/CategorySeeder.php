@@ -18,36 +18,39 @@ class CategorySeeder extends Seeder
         $sachCategory = Category::create([
             'name' => 'Sách',
             'slug' => 'sach',
-            'description' => 'Tất cả các loại sách.',
+            'description' => '<p>Tất cả các loại sách.</p>',
             'parent_id' => null,
         ]);
 
         $sachDienTuCategory = Category::create([
             'name' => 'Sách điện tử',
+            'avatar' => 'https://salt.tikicdn.com/ts/category/cc/66/3d/4e4f1b8b1e772fe9e09611c6bec98746.png',
             'slug' => 'sach-dien-tu',
-            'description' => 'Phiên bản kỹ thuật số của sách.',
+            'description' => '<p>Phiên bản kỹ thuật số của sách.</p>',
             'parent_id' => null,
         ]);
 
         // Tạo danh mục con
         Category::create([
             'name' => 'Tiểu thuyết',
+            'avatar'=>'https://salt.tikicdn.com/ts/category/53/0f/bc/f6e936554ec845b45af8f94cbd4f1569.png',
             'slug' => 'tieu-thuyet',
-            'description' => 'Sách tiểu thuyết.',
+            'description' => '<p>Sách tiểu thuyết.</p>',
             'parent_id' => $sachCategory->id,
         ]);
 
         Category::create([
             'name' => 'Phi hư cấu',
+            'avatar'=>'https://salt.tikicdn.com/ts/category/45/ab/0f/cffe9f60a7b37e0f87a9c50c4478aed9.png',
             'slug' => 'phi-hu-cau',
-            'description' => 'Sách phi hư cấu.',
+            'description' => '<p>Sách phi hư cấu.</p>',
             'parent_id' => $sachCategory->id,
         ]);
 
         Category::create([
             'name' => 'Khoa học',
             'slug' => 'khoa-hoc',
-            'description' => 'Sách khoa học.',
+            'description' => '<p>Sách khoa học.</p>',
             'parent_id' => $sachDienTuCategory->id,
         ]);
     }

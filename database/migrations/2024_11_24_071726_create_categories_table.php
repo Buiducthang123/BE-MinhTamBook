@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('parent_id')->nullable()->constrained('categories')->onDelete('cascade');
+            $table->foreignId('parent_id')->nullable()->constrained('categories')->onDelete('set null');
             $table->string('name',255)->comment('Tên danh mục');
+            $table->string('avatar')->nullable()->comment('Ảnh đại diện');
             $table->string('slug',255)->unique()->comment('Đường dẫn thân thiện');
             $table->text('description')->nullable()->comment('Mô tả danh mục');
             $table->timestamps();

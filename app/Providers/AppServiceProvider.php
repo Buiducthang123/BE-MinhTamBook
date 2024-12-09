@@ -7,8 +7,12 @@ use App\Repositories\Auth\AuthRepository;
 use App\Repositories\Auth\AuthRepositoryInterface;
 use App\Repositories\Author\AuthorRepository;
 use App\Repositories\Author\AuthorRepositoryInterface;
+use App\Repositories\AuthorsBook\AuthorsBookRepository;
+use App\Repositories\AuthorsBook\AuthorsBookRepositoryInterface;
 use App\Repositories\Book\BookRepository;
 use App\Repositories\Book\BookRepositoryInterface;
+use App\Repositories\BookTransaction\BookTransactionRepository;
+use App\Repositories\BookTransaction\BookTransactionRepositoryInterface;
 use App\Repositories\Category\CategoryRepository;
 use App\Repositories\Category\CategoryRepositoryInterface;
 use App\Repositories\Order\OrderRepository;
@@ -49,6 +53,8 @@ class AppServiceProvider extends ServiceProvider
         OrderItemRepositoryInterface::class => OrderItemRepository::class,
         ReviewRepositoryInterface::class => ReviewRepository::class,
         ShoppingCartRepositoryInterface::class => ShoppingCartRepository::class,
+        BookTransactionRepositoryInterface::class => BookTransactionRepository::class,
+        AuthorsBookRepositoryInterface::class => AuthorsBookRepository::class,
     ];
 
     public function register(): void

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\BookTransactionStatus;
+use App\Enums\BookTransactionType;
 use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
@@ -24,6 +26,34 @@ class Book extends Model
         'dimension_width',
         'deleted_at',
     ];
+
+    public function casts()
+    {
+        return [
+            'thumbnail' => 'array',
+        ];
+    }
+
+
+    protected $appends = ['quantity'];
+    public function getQuantityAttribute()
+{
+    // Lọc các giao dịch import với điều kiện status = success
+    $import = $this->bookTransactions()
+                   ->where('type', BookTransactionType::IMPORT)
+                   ->where('status', BookTransactionStatus::SUCCESS)
+                   ->sum('quantity');
+    $import = (int) $import;
+    // Lọc các giao dịch export với điều kiện status = success
+    $export = $this->bookTransactions()
+                   ->where('type', BookTransactionType::EXPORT)
+                   ->where('status', BookTransactionStatus::SUCCESS)
+                   ->sum('quantity');
+    $export = (int) $export;
+    // Tổng số sách = import - export
+    return $import - $export;
+}
+
 
     public function authors()
     {
@@ -53,6 +83,11 @@ class Book extends Model
     public function promotion()
     {
         return $this->hasOne(Promotion::class);
+    }
+
+    public function bookTransactions()
+    {
+        return $this->hasMany(BookTransaction::class);
     }
 
 }

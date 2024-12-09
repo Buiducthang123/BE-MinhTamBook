@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\Book\Format;
-use App\Enums\Book\Language;
 use Illuminate\Foundation\Http\FormRequest;
 
 class BookRequest extends FormRequest
@@ -23,29 +21,45 @@ class BookRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $bookId = $this->route('id');
+
+        $rules = [
             'category_id' => 'required|exists:categories,id',
             'publisher_id' => 'required|exists:publishers,id',
-            'book_id'=>'exists:books,id',
-            'ISBN'=>'required|max:20',
-            'language' => 'required|in:' . implode(',', (array) Language::getValues()),
-            'format' => 'required|in:' . implode(',', (array) Format::getValues()),
-            'published_date'=>'required|date',
-            'short_description'=>'required',
-            'entry_price'=>'required|numeric',
-            'entry_quantity'=>'required|integer',
-            'stock_quantity'=>'required|integer',
-            'sold_quantity'=>'required|integer',
-            'cover_image'=>'required|url',
-            'thumbnails'=>'required|array',
-            'thumbnails.*'=>'url',
-            'pages'=>'required|integer',
-            'weight'=>'required|numeric',
-            'dimension_length'=>'required|numeric',
-            'dimension_width'=>'required|numeric',
+            'promotion_id' => 'nullable|exists:promotions,id',
+            'title' => 'required|string|max:255',
+
+            'slug' => 'required|string|max:255|unique:books,slug,' . $bookId,
+            'ISBN' => 'required|string|max:13|unique:books,ISBN,' . $bookId,
+            // 'slug' => 'nullable|string|max:255|unique:books,slug,' . $this->route('book'),
+            // 'ISBN' => 'required|string|max:13|unique:books,ISBN,' . $this->route('book'),
+            'cover_image' => 'nullable|url|max:255',
+            'thumbnail' => 'nullable|array',
+            'thumbnail.*' => 'url',
+            'description' => 'nullable|string',
+            'is_sale' => 'boolean',
+            'price' => 'nullable|numeric|min:0',
+            'discount' => 'nullable|numeric|min:0|max:100',
+            'pages' => 'nullable|integer|min:1',
+            'weight' => 'nullable|numeric|min:0',
+            'dimension_length' => 'nullable|numeric|min:0',
+            'dimension_width' => 'nullable|numeric|min:0',
         ];
+
+        // if ($this->isMethod('put') || $this->isMethod('patch')) {
+        //     $rules['slug'] = 'required|string|max:255|unique:books,slug,' . $this->route('book');
+        //     $rules['ISBN'] = 'required|string|max:13|unique:books,ISBN,' . $this->route('book');
+        // }
+
+        return $rules;
     }
 
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [
@@ -55,21 +69,33 @@ class BookRequest extends FormRequest
             'date' => ':attribute không đúng định dạng ngày.',
             'url' => ':attribute không đúng định dạng URL.',
             'max' => ':attribute không được quá :max ký tự.',
-            'in' => ':attribute không hợp lệ.',
+            'min' => ':attribute phải lớn hơn hoặc bằng :min.',
+            'boolean' => ':attribute phải là true hoặc false.',
+            'unique' => ':attribute đã tồn tại.',
+            'array' => ':attribute phải là mảng.',
         ];
     }
 
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array<string, string>
+     */
     public function attributes(): array
     {
         return [
             'category_id' => 'Danh mục',
             'publisher_id' => 'Nhà xuất bản',
-            'book_id' => 'Sách',
+            'promotion_id' => 'Khuyến mãi',
+            'title' => 'Tên sách',
+            'slug' => 'Slug',
             'ISBN' => 'Mã ISBN',
-            'language' => 'Ngôn ngữ',
-            'format' => 'Định dạng',
-            'published_date' => 'Ngày xuất bản',
-            'thumbnails' => 'Ảnh minh họa',
+            'cover_image' => 'Ảnh bìa',
+            'thumbnail' => 'Ảnh minh họa',
+            'description' => 'Mô tả',
+            'is_sale' => 'Trạng thái bán',
+            'price' => 'Giá bán',
+            'discount' => 'Giảm giá',
             'pages' => 'Số trang',
             'weight' => 'Trọng lượng',
             'dimension_length' => 'Chiều dài',
