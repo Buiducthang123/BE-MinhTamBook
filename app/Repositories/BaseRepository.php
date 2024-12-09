@@ -31,7 +31,7 @@ abstract class BaseRepository implements RepositoryInterface
 
     public function getAll($paginate = null, $with = [])
     {
-        $query = $this->model;
+        $query = $this->model->query();
         if (!empty($with)) {
             $query = $query->with($with);
         }

@@ -23,12 +23,23 @@ class BookController extends Controller
 
     public function create(BookRequest $request)
     {
-        $validated = $request->validated();
-
-        if($validated->fails()){
-            return response()->json($validated->errors(), 400);
+        try {
+            $book = $this->bookService->create($request->all());
+            return response()->json($book);
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage());
         }
-        return response()->json($request->all());
-        // return response()->json($this->bookService->create($request->all()));
+    }
+
+    public function show($id, Request $request)
+    {
+        $book = $this->bookService->show($id, $request->all());
+        return response()->json($book);
+    }
+
+    public function update(BookRequest $request, $id)
+    {
+        $book = $this->bookService->update($request->all(), $id);
+        return response()->json($book);
     }
 }
