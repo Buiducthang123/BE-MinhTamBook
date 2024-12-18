@@ -15,6 +15,7 @@ class Book extends Model
         'slug',
         'ISBN',
         'cover_image',
+        'short_description',
         'description',
         'thumbnail',
         'is_sale',
@@ -22,6 +23,7 @@ class Book extends Model
         'discount',
         'pages',
         'weight',
+        'height',
         'dimension_length',
         'dimension_width',
         'deleted_at',
@@ -34,26 +36,29 @@ class Book extends Model
         ];
     }
 
-
     protected $appends = ['quantity'];
     public function getQuantityAttribute()
-{
-    // Lọc các giao dịch import với điều kiện status = success
-    $import = $this->bookTransactions()
-                   ->where('type', BookTransactionType::IMPORT)
-                   ->where('status', BookTransactionStatus::SUCCESS)
-                   ->sum('quantity');
-    $import = (int) $import;
-    // Lọc các giao dịch export với điều kiện status = success
-    $export = $this->bookTransactions()
-                   ->where('type', BookTransactionType::EXPORT)
-                   ->where('status', BookTransactionStatus::SUCCESS)
-                   ->sum('quantity');
-    $export = (int) $export;
-    // Tổng số sách = import - export
-    return $import - $export;
-}
+    {
+        // Lọc các giao dịch import với điều kiện status = success
+        $import = $this->bookTransactions()
+            ->where('type', BookTransactionType::IMPORT)
+            ->where('status', BookTransactionStatus::SUCCESS)
+            ->sum('quantity');
+        $import = (int) $import;
+        // Lọc các giao dịch export với điều kiện status = success
+        $export = $this->bookTransactions()
+            ->where('type', BookTransactionType::EXPORT)
+            ->where('status', BookTransactionStatus::SUCCESS)
+            ->sum('quantity');
+        $export = (int) $export;
+        // Tổng số sách = import - export
+        return $import - $export;
+    }
 
+    public function getThumbnailAttribute($value)
+    {
+        return json_decode($value);
+    }
 
     public function authors()
     {

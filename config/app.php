@@ -123,4 +123,15 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'ghn_token' =>  env('GHN_TOKEN',''),
+
+    'shop_id' => env('GHN_SHOP_ID', 0),
+
+    'VnPay_return_url' => env('VNP_RETURN_URL', ''),
+
+    'VnPay_tmncode' => env('VNP_TMN_CODE', ''),
+
+    'VnPay_hash_secret' => env('VNP_HASH_SECRET', ''),
+
+    'VnPay_url' => env('VNP_URL', ''),
 ];

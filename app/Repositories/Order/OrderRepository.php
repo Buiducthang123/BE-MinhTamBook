@@ -11,4 +11,9 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
     {
         return Order::class;
     }
+
+    // public function create($data = [])
+    // {
+    //     return $this->model->create($data);
+    // }
 }

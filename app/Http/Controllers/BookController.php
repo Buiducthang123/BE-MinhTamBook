@@ -42,4 +42,11 @@ class BookController extends Controller
         $book = $this->bookService->update($request->all(), $id);
         return response()->json($book);
     }
+
+    public function getBookByCategory($category_id, Request $request)
+    {
+        $data = $request->all();
+        $books = $this->bookService->getBookByCategory($category_id, $data);
+        return response()->json($books);
+    }
 }

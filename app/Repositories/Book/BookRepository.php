@@ -112,15 +112,19 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface
         return $query->get();
     }
 
-    public function show($id, $with = [])
+    public function show($id,  $with = [])
     {
         $query = $this->model->query();
 
-        if(!empty($with)){
+        if (!empty($with)) {
             $query->with($with);
         }
 
-        return $query->find($id);
+        $book = $query->where(function ($query) use ($id) {
+            $query->where('id', $id)->orWhere('slug', $id);
+        })->first();
+
+        return $book;
     }
 
     public function update($id, $attributes = []){
@@ -160,5 +164,42 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface
         }
     }
 
+    public function getBookByCategory($category_id, $paginate = null, $with = []){
+        $query = $this->model->query();
+
+        if(!empty($with)){
+            $query->with($with);
+        }
+
+        $query->where('category_id', $category_id);
+
+        if($paginate){
+            return $query->paginate($paginate);
+        }
+        return $query->get();
+    }
+
+    public function checkQuantity($id, $quantity){
+        $book = $this->model->find($id);
+        if($book){
+            if($book->quantity >= $quantity){
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    public function getBookInArrId($arrId, $with = []){
+        $query = $this->model->query();
+
+        if(!empty($with)){
+            $query->with($with);
+        }
+
+        $query->whereIn('id', $arrId);
+
+        return $query->get();
+    }
 
 }

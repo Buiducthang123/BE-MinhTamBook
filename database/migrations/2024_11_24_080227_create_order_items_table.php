@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('book_id')->constrained('books')->onDelete('cascade');
             $table->integer('quantity')->default(1)->comment('Số lượng');
             $table->decimal('price', 10, 2)->comment('Giá');
+            $table->decimal('discount_amount', 10, 2)->default(0)->comment('Số tiền giảm giá');
+            // $table->decimal('final_amount', 15, 2)->nullable()->comment('Tổng tiền');
             $table->timestamps();
         });
     }
