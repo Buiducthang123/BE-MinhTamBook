@@ -5,9 +5,12 @@ use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BookTransactionController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PublisherController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShippingAddressController;
+use App\Http\Controllers\ShoppingCartController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyEmailController;
 use Illuminate\Http\Request;
@@ -65,9 +68,10 @@ Route::prefix('books')->middleware(['auth:sanctum','admin'])->group(function(){
     Route::post('/', [BookController::class, 'create'])->name('books.create');
     Route::patch('/{id}', [BookController::class, 'update'])->name('books.update');
     Route::delete('/{id}', [BookController::class, 'delete'])->name('books.delete');
-    Route::get('/{id}', [BookController::class, 'show'])->name('books.show');
 });
 
+Route::get('books/{id}', [BookController::class, 'show'])->name('books.show');
+Route::get('book-by-category/{category_id}', [BookController::class, 'getBookByCategory'])->name('books.by-category');
 Route::get('/books', [BookController::class, 'index'])->name('books.all');
 
 
@@ -81,9 +85,7 @@ Route::prefix('shipping-addresses')->middleware('auth:sanctum')->group(function(
 
 //category routes
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.all');
-
 Route::get('/categories/{slug}', [CategoryController::class, 'show'])->name('categories.show');
-
 Route::prefix('/categories')->middleware(['auth:sanctum','admin'])->group(function(){
     Route::post('/', [CategoryController::class, 'create'])->name('categories.create');
     Route::patch('/{id}', [CategoryController::class, 'update'])->name('categories.update');
@@ -92,7 +94,6 @@ Route::prefix('/categories')->middleware(['auth:sanctum','admin'])->group(functi
 
 
 //BookTransaction Routes
-
 Route::prefix('book-transactions')->middleware(['auth:sanctum','admin'])->group(function(){
     Route::get('/', [BookTransactionController::class, 'index'])->name('book-transactions.all');
     Route::get('/{id}', [BookTransactionController::class, 'show'])->name('book-transactions.show');
@@ -100,3 +101,24 @@ Route::prefix('book-transactions')->middleware(['auth:sanctum','admin'])->group(
     Route::patch('/{id}', [BookTransactionController::class, 'update'])->name('book-transactions.update');
     Route::delete('/{id}', [BookTransactionController::class, 'delete'])->name('book-transactions.delete');
 });
+
+//Shopping Cart Routes
+Route::prefix('shopping-carts')->middleware('auth:sanctum')->group(function(){
+    Route::get('/', [ShoppingCartController::class, 'getCartItems'])->name('shopping-carts.my-cart');
+    Route::post('/', [ShoppingCartController::class, 'create'])->name('shopping-carts.add-to-cart');
+    Route::delete('/{id}', [ShoppingCartController::class, 'delete'])->name('shopping-carts.delete-item');
+
+});
+
+
+
+
+//Payment Routes
+
+Route::prefix('payments')->middleware('auth:sanctum')->group(function(){
+    Route::post('/', [PaymentController::class, 'create'])->name('payments.create');
+});
+
+
+//Order Routes
+Route::post('/orders', [OrderController::class, 'create'])->middleware('auth:sanctum')->name('orders.create');

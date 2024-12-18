@@ -38,7 +38,7 @@ class ShippingAddressRequest extends FormRequest
             'ward.WardCode' => 'required|string|max:10',
             'ward.WardName' => 'required|string|max:255',
             'ward.NameExtension' => 'required|array',
-            'ward.IsEnable' => 'required|boolean',
+            // 'ward.IsEnable' => 'required',
             'specific_address' => 'required|string|max:255',
             'is_default' => 'required|boolean',
         ];

@@ -8,7 +8,18 @@ class Category extends Model
 {
     protected $fillable = ['name', 'slug', 'description', 'parent_id', 'avatar'];
 
-    protected $appends = ['quantity_book'];
+    protected $appends = ['quantity_book', 'level'];
+
+    public function getLevelAttribute()
+    {
+        $level = 0;
+        $category = $this;
+        while ($category->parent) {
+            $level++;
+            $category = $category->parent;
+        }
+        return $level;
+    }
 
     public function getQuantityBookAttribute()
     {

@@ -15,6 +15,7 @@ class Order extends Model
         'shipping_fee',
         'voucher_code',
         'discount_amount',
+        'final_amount',
         'amount',
         'payment_date',
         'transaction_id',

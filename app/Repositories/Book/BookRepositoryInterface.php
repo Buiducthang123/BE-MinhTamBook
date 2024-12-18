@@ -10,5 +10,11 @@ interface BookRepositoryInterface extends RepositoryInterface
     public function show($id, $with = []);
 
     public function create($data = []);
-}
 
+    public function getBookByCategory($category_id, $paginate = null, $with = []);
+
+    // kiểm tra số lượng sách còn trong kho
+    public function checkQuantity($id, $quantity);
+
+    public function getBookInArrId($arrId, $with = []);
+}
