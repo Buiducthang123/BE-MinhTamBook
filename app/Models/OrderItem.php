@@ -11,7 +11,7 @@ class OrderItem extends Model
         'book_id',
         'quantity',
         'discount_amount',
-        'final_amount',
+        // 'final_amount',
         'price',
     ];
 

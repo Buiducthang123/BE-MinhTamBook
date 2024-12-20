@@ -3,28 +3,13 @@ namespace App\Enums;
 
 class OrderStatus
 {
-   //chờ duyệt
-    const PENDING = 1;
-
-    //đã được duyệt
-
-    const APPROVED = 2;
-
-    //đang chuẩn bị hàng
-
-    const PREPARING = 3;
-
-    //đơn hàng đang được vận chuyển
-
-    const SHIPPING = 4;
-
-    //đã giao hàng
-
-    const DELIVERED = 5;
-
-    //đã hủy
-
-    const CANCELLED = 6;
+    const PENDING = 1; // Chờ duyệt
+    const APPROVED = 2; // Đã duyệt
+    const PREPARING = 3; // Đang chuẩn bị hàng
+    const SHIPPING = 4; // Đang vận chuyển
+    const DELIVERED = 5; // Đã giao hàng
+    const CANCELLED = 6; // Đã hủy
+    const NOT_PAID = 7; // Chưa chuyển khoản
 
     public static function getStatuses()
     {
@@ -35,6 +20,7 @@ class OrderStatus
             self::SHIPPING => 'Đang vận chuyển',
             self::DELIVERED => 'Đã giao hàng',
             self::CANCELLED => 'Đã hủy',
+            self::NOT_PAID => 'Chưa chuyển khoản',
         ];
     }
 
@@ -47,7 +33,7 @@ class OrderStatus
             self::SHIPPING,
             self::DELIVERED,
             self::CANCELLED,
+            self::NOT_PAID,
         ];
     }
-
 }

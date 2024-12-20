@@ -36,7 +36,7 @@ class BookSeeder extends Seeder
                 'discount' => $faker->randomFloat(2, 0, 30),
                 'pages' => $faker->numberBetween(100, 500),
                 'weight' => $faker->randomFloat(2, 0.5, 2),
-                'height' => $faker->randomFloat(2, 10, 30),
+                'height' => $faker->randomFloat(2, 2, 5),
                 'dimension_length' => $faker->randomFloat(2, 10, 30),
                 'dimension_width' => $faker->randomFloat(2, 10, 30),
             ]);

@@ -10,4 +10,6 @@ interface ShoppingCartRepositoryInterface extends RepositoryInterface{
     public function findItemInCart($user_id, $book_id);
 
     public function delete($book_id);
+
+
 }
