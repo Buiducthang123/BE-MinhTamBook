@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\OrderStatus;
 use App\Http\Requests\OrderRequest;
 use Illuminate\Http\Request;
 
@@ -17,9 +18,5 @@ class PaymentController extends Controller
         $this->orderItemController = $orderItemController;
     }
 
-    public function create(OrderRequest $orderRequest) {
-        $order = $this->orderController->create($orderRequest);
-        return $order;
-    }
 
 }

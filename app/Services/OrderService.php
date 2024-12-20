@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Repositories\Book\BookRepositoryInterface;
 use App\Repositories\Order\OrderRepositoryInterface;
@@ -121,6 +122,10 @@ class OrderService
             'payment_method' => $data['payment_method'],
         ];
 
+        if($data['payment_method'] == PaymentMethod::BANK_TRANSFER) {
+            $dataCreateOrder['status'] = OrderStatus::NOT_PAID;
+        }
+
         DB::beginTransaction();
 
         try {
@@ -135,6 +140,7 @@ class OrderService
                     'order_id' => $order->id,
                     'order_info' => 'Thanh toán đơn hàng',
                     'amount' => $finalPrice,
+                    'vnp_ReturnUrl' => config('app.url').'/api/order/'.$order->id.'/payment-return',
                 ]);
                 return $url;
             } else {
@@ -145,5 +151,29 @@ class OrderService
             DB::rollBack();
             throw $e;
         }
+    }
+
+    public function updateStatusAfterPayment($id, $data)
+    {
+        $checkPayment = $this->paymentService->checkPayment($data);
+
+        if($checkPayment) {
+
+            $dataUpdate = [
+                'status' => OrderStatus::PENDING,
+                //convert "vnp_PayDate": "20241219142301", to date not datetime
+                'payment_date' => date('Y-m-d', strtotime($data['vnp_PayDate'])),
+                'transaction_id' => $data['vnp_TransactionNo'], // mã giao dịch
+                'ref_id' => $data['vnp_TxnRef'], // mã đơn hàng
+            ];
+
+            $order = $this->orderRepository->update($data['vnp_TxnRef'], $dataUpdate);
+
+            return $order;
+        }
+        //replace route sang port 3000
+
+        // return redirect()->away(config('app.frontend_url'));
+
     }
 }

@@ -122,3 +122,5 @@ Route::prefix('payments')->middleware('auth:sanctum')->group(function(){
 
 //Order Routes
 Route::post('/orders', [OrderController::class, 'create'])->middleware('auth:sanctum')->name('orders.create');
+
+Route::get('/order/{id}/payment-return', [OrderController::class, 'updateStatusAfterPayment'])->name('orders.update-status-after-payment');
