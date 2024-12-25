@@ -111,9 +111,6 @@ Route::prefix('shopping-carts')->middleware('auth:sanctum')->group(function(){
 
 });
 
-
-
-
 //Payment Routes
 
 Route::prefix('payments')->middleware('auth:sanctum')->group(function(){

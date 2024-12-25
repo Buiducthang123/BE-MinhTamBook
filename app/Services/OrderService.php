@@ -86,7 +86,7 @@ class OrderService
 
             $postData = [
                 'shop_id' => (int) config('app.ghn_shop_id'),
-                'service_id' => 53321,
+                'service_id' => 53322,
                 'to_district_id' => $shipping_address['district']['DistrictID'],
                 'to_ward_code' => $shipping_address['ward']['WardCode'],
                 'service_type_id' => 2,
@@ -173,13 +173,13 @@ class OrderService
                 'ref_id' => $data['vnp_TxnRef'], // mã đơn hàng
             ];
 
-            $order = $this->orderRepository->update($data['vnp_TxnRef'], $dataUpdate);
+            $this->orderRepository->update($data['vnp_TxnRef'], $dataUpdate);
 
-            return $order;
+            redirect()->away(config('app.frontend_url').'/checkout?status=success');
+
         }
-        //replace route sang port 3000
 
-        // return redirect()->away(config('app.frontend_url'));
+        return redirect()->away(config('app.frontend_url').'/checkout?status=fail');
 
     }
 

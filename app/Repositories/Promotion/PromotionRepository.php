@@ -38,6 +38,10 @@ class PromotionRepository extends BaseRepository implements PromotionRepositoryI
             if ($end_date) {
                 $query->where('end_date', '<=', $end_date);
             }
+
+            if($start_date && $end_date){
+                $query->whereBetween('start_date', [$start_date, $end_date]);
+            }
         }
 
         if ($sort) {
@@ -63,6 +67,11 @@ class PromotionRepository extends BaseRepository implements PromotionRepositoryI
 
     public function show($id, $with = [])
     {
-        return $this->model->with($with)->find($id);
+       $query = $this->model->query();
+        if (!empty($with)) {
+            $query->with($with);
+        }
+       $query->where('id', $id)->orWhere('slug', $id);
+       return $query->first();
     }
 }

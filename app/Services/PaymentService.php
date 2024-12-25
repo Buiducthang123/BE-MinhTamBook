@@ -11,9 +11,9 @@ class PaymentService
 
         $order_id = $data['order_id'];
 
-        // $amount = $data['amount'];
+        $amount = $data['amount'] ?? 00;
 
-        $amount = 100000;
+        // $amount = 100000;
 
         $vnp_TmnCode = config('app.VnPay_tmncode'); // Mã website tại VNPAY
 
@@ -112,7 +112,7 @@ class PaymentService
 
         $secureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
 
-        if ($secureHash == $vnp_SecureHash) {
+        if ($secureHash == $vnp_SecureHash && $data['vnp_ResponseCode'] == '00') {
             return true;
         }
         return false;

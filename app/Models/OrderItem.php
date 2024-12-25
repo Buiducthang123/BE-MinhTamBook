@@ -10,8 +10,9 @@ class OrderItem extends Model
         'order_id',
         'book_id',
         'quantity',
-        'discount_amount',
+        // 'discount_amount',
         // 'final_amount',
+        'discount',
         'price',
     ];
 
@@ -22,6 +23,6 @@ class OrderItem extends Model
 
     public function book()
     {
-        return $this->hasMany(Book::class);
+        return $this->belongsTo(Book::class);
     }
 }

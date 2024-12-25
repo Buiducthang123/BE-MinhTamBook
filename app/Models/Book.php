@@ -58,8 +58,18 @@ class Book extends Model
     public function getDiscountAttribute()
     {
         //Kiểm tra xem sách có promotion không nếu có thì lấy giảm giá từ promotion
-        if ($this->promotion) {
-            return $this->promotion->discount;
+        // kiểm tra start_date và end_date của promotion tính theo giờ phút giây
+        // nếu promotion đang diễn ra thì lấy giảm giá từ promotion
+        // nếu promotion đã kết thúc thì lấy giảm giá từ discount mặc định của sách
+        // nếu không có promotion thì lấy giảm giá mặc định của sách
+        $promotion = $this->promotion;
+        if ($promotion) {
+            $start_date = strtotime($promotion->start_date); // chuyển ngày về giây
+            $end_date = strtotime($promotion->end_date);
+            $now = strtotime(now());
+            if ($start_date <= $now && $now <= $end_date) {
+                return $promotion->discount;
+            }
         }
         return $this->attributes['discount'];
     }
@@ -103,5 +113,11 @@ class Book extends Model
     {
         return $this->hasMany(BookTransaction::class);
     }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
 
 }
