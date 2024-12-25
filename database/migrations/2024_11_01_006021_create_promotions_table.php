@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('title')->comment('Tiêu đề');
             $table->string('slug')->nullable()->unique()->comment('Đường dẫn thân thiện');
+            $table->decimal('discount', 5, 2)->default(0)->comment('Giảm giá');
+            $table->string('image')->nullable()->comment('Hình ảnh');
             $table->text('description')->nullable()->comment('Mô tả');
             $table->dateTime('start_date')->comment('Ngày bắt đầu');
             $table->dateTime('end_date')->comment('Ngày kết thúc');

@@ -32,6 +32,7 @@ return new class extends Migration
             $table->enum('status', OrderStatus::getAllStatuses())->comment('Trạng thái');
             $table->decimal('total_amount', 10, 2)->comment('Tổng tiền');//chưa cộng phí vận chuyển và voucher
             $table->decimal('shipping_fee', 10, 2)->default(0)->comment('Phí vận chuyển');
+            $table->json('shipping_address')->comment('Địa chỉ nhận hàng');
             $table->decimal('discount_amount', 10, 2)->default(0)->comment('Số tiền giảm giá');
             $table->decimal('final_amount', 15, 2)->comment('Số tiền cần thanh toán');//đã cộng phí vận chuyển và voucher
             $table->enum('payment_method', PaymentMethod::getAllMethods())->comment('Phương thức thanh toán');

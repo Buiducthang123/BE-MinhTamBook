@@ -16,12 +16,29 @@ class Order extends Model
         'voucher_code',
         'discount_amount',
         'final_amount',
+        'shipping_address',
         'amount',
         'payment_date',
         'transaction_id',
         'ref_id',
         'note',
     ];
+
+    protected $casts = [
+        'status' => 'integer',
+    ];
+
+
+    //encode shipping address
+    public function setShippingAddress(){
+        $this->attributes['shipping_address'] = json_encode($this->attributes['shipping_address']);
+    }
+
+    //decode shipping address
+
+    public function getShippingAddressAttribute($value){
+        return json_decode($value);
+    }
 
     public function user()
     {

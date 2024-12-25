@@ -32,9 +32,9 @@ class RegisterRequest extends FormRequest
                 'companyName' => 'required|max:255',
                 'companyAddress' => 'required|max:255',
                 'companyPhoneNumber' => 'required|regex:/^0[0-9]{9}$/',
-                'companyTaxCode' => 'required|regex:/^[0-9]{10}$/', // Mã số thuế có 10 chữ số // ví dụ: 1234567890
+                'companyTaxCode' => 'required', // Mã số thuế không có định dạng cụ thể
                 'contactPersonName' => 'required|max:255',
-                'representativeIdCard' => 'required|regex:/^[0-9]{9}$/', // Số CMND có 9 chữ số // ví dụ: 123456789
+                'representativeIdCard' => 'required', // Số CMND không có định dạng cụ thể
                 'representativeIdCardDate' => 'required|date',
                 'contactPersonPosition' => 'required|max:255',
             ]);

@@ -23,7 +23,7 @@ class AuthRepository extends BaseRepository implements AuthRepositoryInterface
             $data['password'] = bcrypt($data['password']);
             $user = $this->model->create($data);
             if ($user) {
-               Mail::to($user->email)->queue(new VerifyEmail($user));
+                Mail::to($user->email)->queue(new VerifyEmail($user));
                 DB::commit();
                 return $user;
             }
@@ -47,21 +47,28 @@ class AuthRepository extends BaseRepository implements AuthRepositoryInterface
             return abort(404, 'Mật khẩu không chính xác');
         }
         $user = $user->load('role');
-       return $user;
+        return $user;
     }
 
-    public function logout()
-    {
+    public function logout($isLogoutAll = false)
+{
+    try {
         $user = Auth::user();
         if ($user) {
-            $result = $user->tokens()->delete();
-            if ($result) {
-                return response()->json();
+            if ($isLogoutAll) {
+                $user->tokens()->delete();
+            } else {
+                $user->currentAccessToken()->delete();
             }
-            return abort(500, 'Đăng xuất thất bại');
+            return ;
         }
-        return abort(404, 'Không tìm thấy tài khoản');
+        return abort(404, 'Không tìm thấy người dùng');
+    } catch (\Exception $e) {
+
+        return abort(404, $e->getMessage());
     }
+}
+
 
     public function loginGoogle()
     {
@@ -75,7 +82,7 @@ class AuthRepository extends BaseRepository implements AuthRepositoryInterface
 
     public function findUser($field)
     {
-        if($field['email']){
+        if ($field['email']) {
             return $this->model->where('email', $field['email'])->first();
         }
         return null;

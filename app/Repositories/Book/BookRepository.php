@@ -12,30 +12,61 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface
         return Book::class;
     }
 
-    public function getAll($paginate = null, $with = [], $filter = null, $limit = null, $search = null)
+    public function getAll($paginate = null, $with = [], $filter = null, $limit = null, $search = null, $sort = null)
     {
         $query = $this->model->query();
 
-        if(!empty($with)){
+        if (!empty($with)) {
             $query->with($with);
         }
 
-        if($filter){
+        if ($filter) {
             $filter = json_decode($filter, true);
             $category_id = $filter['category_id'] ?? null;
             $publisher_id = $filter['publisher_id'] ?? null;
 
-            if($category_id){
+            if ($category_id) {
                 $query->where('category_id', $category_id);
             }
 
-            if($publisher_id){
+            if ($publisher_id) {
                 $query->where('publisher_id', $publisher_id);
             }
 
-            //sắp xếp
-            $sort = $filter['sort'] ?? null;
-            switch ($sort){
+            //lọc theo trạng thái bán
+            $is_sale = $filter['is_sale'] ?? null;
+            switch ($is_sale) {
+                case 'all':
+                    break;
+                case 1:
+                    $query->where('is_sale', 1);
+                    break;
+                case 0:
+                    $query->where('is_sale', 0);
+                    break;
+                default:
+                    break;
+            }
+
+            //lọc theo khoảng giá
+
+            $priceFrom = $filter['priceFrom'] ?? null;
+            $priceTo = $filter['priceTo'] ?? null;
+
+            if($priceFrom && $priceTo){
+                $query->whereBetween('price', [$priceFrom, $priceTo]);
+            }
+
+            //Lấy book chưa thuộc promotion nào
+            $promotion_null = $filter['promotion_null'] ?? null;
+
+            if($promotion_null){
+                $query->whereNull('promotion_id');
+            }
+        }
+
+        if ($sort) {
+            switch ($sort) {
                 case 'all':
                     break;
                 case 'new':
@@ -71,48 +102,33 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface
                 default:
                     break;
             }
-
-            //lọc theo trạng thái bán
-            $is_sale = $filter['is_sale'] ?? null;
-            switch ($is_sale){
-                case 'all':
-                    break;
-                case 1:
-                    $query->where('is_sale', 1);
-                    break;
-                case 0:
-                    $query->where('is_sale', 0);
-                    break;
-                default:
-                    break;
-            }
         }
 
-        if($search){
+        if ($search) {
             $search = json_decode($search, true);
 
             $title = $search['title'] ?? null;
 
-            if($title){
+            if ($title) {
                 //tìm kiếm theo tiêu đề hoặc nhà xuất bản hoặc tác giả
                 //tác giả và nhà xuất bản là bảng liên kết nên cần join
-                $query->where('title', 'like', '%'.$title.'%')
-                    ->orWhereHas('authors', function($q) use ($title){
-                        $q->where('name', 'like', '%'.$title.'%');
+                $query->where('title', 'like', '%' . $title . '%')
+                    ->orWhereHas('authors', function ($q) use ($title) {
+                        $q->where('name', 'like', '%' . $title . '%');
                     })
-                    ->orWhereHas('publisher', function($q) use ($title){
-                        $q->where('name', 'like', '%'.$title.'%');
+                    ->orWhereHas('publisher', function ($q) use ($title) {
+                        $q->where('name', 'like', '%' . $title . '%');
                     });
             }
         }
 
-        if($paginate){
+        if ($paginate) {
             return $query->paginate($paginate);
         }
         return $query->get();
     }
 
-    public function show($id,  $with = [])
+    public function show($id, $with = [])
     {
         $query = $this->model->query();
 
@@ -127,13 +143,14 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface
         return $book;
     }
 
-    public function update($id, $attributes = []){
+    public function update($id, $attributes = [])
+    {
         $model = $this->model->find($id);
         DB::beginTransaction();
         try {
-            if($model){
+            if ($model) {
                 $book = $model->update($attributes);
-                if($book){
+                if ($book) {
                     $model->authors()->sync($attributes['authors']);
                     DB::commit();
                     return $model;
@@ -148,11 +165,12 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface
         return null;
     }
 
-    public function create($attributes = []){
+    public function create($attributes = [])
+    {
         DB::beginTransaction();
         try {
             $book = $this->model->create($attributes);
-            if($book){
+            if ($book) {
                 $book->authors()->attach($attributes['authors']);
                 DB::commit();
                 return $book;
@@ -164,25 +182,27 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface
         }
     }
 
-    public function getBookByCategory($category_id, $paginate = null, $with = []){
+    public function getBookByCategory($category_id, $paginate = null, $with = [])
+    {
         $query = $this->model->query();
 
-        if(!empty($with)){
+        if (!empty($with)) {
             $query->with($with);
         }
 
         $query->where('category_id', $category_id);
 
-        if($paginate){
+        if ($paginate) {
             return $query->paginate($paginate);
         }
         return $query->get();
     }
 
-    public function checkQuantity($id, $quantity){
+    public function checkQuantity($id, $quantity)
+    {
         $book = $this->model->find($id);
-        if($book){
-            if($book->quantity >= $quantity){
+        if ($book) {
+            if ($book->quantity >= $quantity) {
                 return true;
             }
             return false;
@@ -190,10 +210,11 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface
         return false;
     }
 
-    public function getBookInArrId($arrId, $with = []){
+    public function getBookInArrId($arrId, $with = [])
+    {
         $query = $this->model->query();
 
-        if(!empty($with)){
+        if (!empty($with)) {
             $query->with($with);
         }
 

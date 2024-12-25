@@ -5,5 +5,9 @@ use App\Repositories\RepositoryInterface;
 
 interface OrderRepositoryInterface extends RepositoryInterface
 {
-    // public function create($data = []);
+    public function getAll($paginate=null ,$with = [], $filter=null, $sort =null);
+
+    public function show($id, $with = []);
+
+    public function myOrder($paginate = null, $with = [], $filter = null, $sort = null);
 }

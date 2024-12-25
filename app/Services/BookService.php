@@ -15,9 +15,10 @@ class BookService{
         $paginate = $data['paginate'] ?? null;
         $with = $data['with'] ?? [];
         $filter = $data['filter'] ?? null;
+        $sort = $data['sort'] ?? null;
         $limit = $data['limit'] ?? null;
         $search = $data['search'] ?? null;
-        return $this->bookRepository->getAll($paginate, $with, $filter, $limit, $search);
+        return $this->bookRepository->getAll($paginate, $with, $filter, $limit, $search,$sort);
     }
     public function create($data){
         return $this->bookRepository->create($data);
