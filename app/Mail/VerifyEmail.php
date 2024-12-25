@@ -16,7 +16,6 @@ class VerifyEmail extends Mailable
 
     public $email;
     public $url = '';
-
     public $user;
 
     /**
@@ -30,8 +29,9 @@ class VerifyEmail extends Mailable
             ['id' => $user->id, 'hash' => sha1($user->email)]
         );
 
-        $this->url = str_replace(config('app.url').'/api', config('app.frontend_url'), $generate);
+        // $this->url = str_replace(config('app.url').'/api', config('app.frontend_url'), $generate);
         // $this->url = str_replace(config('app.url') .'/api', config('app.frontend_url'), $generate);
+        $this->url = $generate;
         $this->email = $user->email;
         $this->user = $user;
     }

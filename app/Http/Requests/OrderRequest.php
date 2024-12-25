@@ -22,22 +22,24 @@ class OrderRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            // 'status' => 'required|in:' . implode(',', OrderStatus::getAllStatuses()),
-            // 'total_amount' => 'required|numeric',
-            // 'shipping_fee' => 'nullable|numeric',
-            // 'discount_amount' => 'nullable|numeric',
-            // 'final_amount' => 'required|numeric',
-            // 'payment_method' => 'required|in:' . implode(',', OrderStatus::getAllStatuses()),
-            // 'payment_date' => 'nullable|date',
-            // 'voucher_code' => 'nullable|string|max:255',
-            // 'transaction_id' => 'nullable|integer',
-            // 'ref_id' => 'nullable|integer',
+        $rules = [
+            'shipping_address' => 'required',
             'note' => 'nullable|string',
         ];
+
+        if($this->isMethod('put') || $this->isMethod('patch')){
+           $rules['status'] = 'required|in: ' . implode(',', OrderStatus::getAllStatuses());
+
+           unset($rules['shipping_address']);
+
+           unset($rules['note']);
+        }
+
+        return $rules;
     }
 
-    public function attributes(){
+    public function attributes()
+    {
         return [
             'status' => 'Trạng thái',
             'total_amount' => 'Tổng tiền',
@@ -50,10 +52,12 @@ class OrderRequest extends FormRequest
             'transaction_id' => 'Mã giao dịch',
             'ref_id' => 'Mã giao dịch hoàn',
             'note' => 'Ghi chú',
+            'shipping_address' => 'Địa chỉ nhận hàng',
         ];
     }
 
-    public function messages(){
+    public function messages()
+    {
         return [
             'required' => ':attribute không được để trống',
             'numeric' => ':attribute phải là số',

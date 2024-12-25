@@ -44,9 +44,9 @@ class AuthService
             'message' => 'Đăng nhập thành công',
         ];
     }
-    public function logout()
+    public function logout($isLogoutAll = false)
     {
-        return $this->authRepository->logout();
+        return $this->authRepository->logout($isLogoutAll);
     }
     public function user()
     {

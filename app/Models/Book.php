@@ -55,6 +55,15 @@ class Book extends Model
         return $import - $export;
     }
 
+    public function getDiscountAttribute()
+    {
+        //Kiểm tra xem sách có promotion không nếu có thì lấy giảm giá từ promotion
+        if ($this->promotion) {
+            return $this->promotion->discount;
+        }
+        return $this->attributes['discount'];
+    }
+
     public function getThumbnailAttribute($value)
     {
         return json_decode($value);
@@ -87,7 +96,7 @@ class Book extends Model
 
     public function promotion()
     {
-        return $this->hasOne(Promotion::class);
+        return $this->belongsTo(Promotion::class);
     }
 
     public function bookTransactions()

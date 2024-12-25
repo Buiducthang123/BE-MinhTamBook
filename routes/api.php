@@ -7,6 +7,7 @@ use App\Http\Controllers\BookTransactionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\PublisherController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShippingAddressController;
@@ -28,7 +29,7 @@ Route::get('/user-me', [AuthController::class, 'user'])->middleware('auth:sanctu
 
 // Verify Email
 // Route::post('/send-email-verification-notification', [VerifyEmailController::class, 'sendEmailVerificationNotification'])->middleware('auth:sanctum')->name('send-email-verification-notification');
-Route::post('/email/verify/', [VerifyEmailController::class, 'verifyEmail'])->middleware(['auth:sanctum', 'signed'])->name('verification.verify');
+Route::get('/email/verify', [VerifyEmailController::class, 'verifyEmail'])->middleware(['signed'])->name('verification.verify');
 
 // Social Login
 Route::get('/login/google', [AuthController::class, 'loginGoogle'])->name('login.google');
@@ -122,5 +123,17 @@ Route::prefix('payments')->middleware('auth:sanctum')->group(function(){
 
 //Order Routes
 Route::post('/orders', [OrderController::class, 'create'])->middleware('auth:sanctum')->name('orders.create');
-
 Route::get('/order/{id}/payment-return', [OrderController::class, 'updateStatusAfterPayment'])->name('orders.update-status-after-payment');
+Route::get('/orders', [OrderController::class, 'getAll'])->middleware(['auth:sanctum','admin'])->name('orders.all');
+Route::get('/order/{id}', [OrderController::class, 'show'])->middleware(['auth:sanctum','admin'])->name('orders.show');
+Route::patch('/order/{id}', [OrderController::class, 'update'])->middleware(['auth:sanctum','admin'])->name('orders.update');
+Route::get('/my-orders', [OrderController::class, 'getMyOrder'])->middleware('auth:sanctum')->name('orders.my-orders');
+
+//Promotion Routes
+Route::prefix('promotions')->middleware(['auth:sanctum','admin'])->group(function(){
+    Route::post('/', [PromotionController::class, 'create'])->name('promotions.create');
+    Route::patch('/{id}', [PromotionController::class, 'update'])->name('promotions.update');
+    Route::delete('/{id}', [PromotionController::class, 'delete'])->name('promotions.delete');
+});
+Route::get('promotions', [PromotionController::class,'all'])->name('promotions.all');
+Route::get('promotions/{id}', [PromotionController::class,'show'])->name('promotions.show');

@@ -3,12 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Mail\VerifyEmail;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 class VerifyEmailController extends Controller
 {
+
+    protected $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
+
     public function sendEmailVerificationNotification(Request $request)
     {
         // Mail::to(Auth::user())->send(new VerifyEmail(Auth::user()));
@@ -19,17 +30,22 @@ class VerifyEmailController extends Controller
 
     public function verifyEmail(Request $request)
     {
-        if($request->user()->id != $request->id){
-            return response()->json(['message' => 'Vui lòng đăng nhập tài khoản chính xác để xác thực'], 401);
+        if (! URL::hasValidSignature($request)) {
+            return redirect()->away(config('app.frontend_url') . '/email/verified?isOk=0');
         }
 
-        if ($request->user()->email_verified_at) {
-            return response()->json(['message' => 'Email đã được xác thực']);
+        $user = $this->userService->show($request->id,[]);
+
+        if (!$user) {
+            return response()->json(['message' => 'Không tìm thấy người dùng'], 404);
         }
-        $request->user()->forceFill([
+
+        if ($user->email_verified_at) {
+            return redirect()->away(config('app.frontend_url') . '/email/verified?isOk=1');
+        }
+        $user->forceFill([
             'email_verified_at' => now(),
         ])->save();
-        return response()->json(['message' => 'Xác thực email thành công']);
-
+        return redirect()->away(config('app.frontend_url') . '/email/verified?isOk=1');
     }
 }

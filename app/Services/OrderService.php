@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
+use function Pest\Laravel\json;
+
 class OrderService
 {
     protected $orderRepository;
@@ -36,8 +38,6 @@ class OrderService
         $user = Auth::user();
 
         $shipping_address = $data['shipping_address'];
-
-        // post api tính phí ship GHN
 
         $apiUrl = 'https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee';
 
@@ -113,14 +113,21 @@ class OrderService
 
         $finalPrice = $totalPrice + $totalShippingFee;
 
+        unset($shipping_address['id'], $shipping_address['user_id']);
+
         $dataCreateOrder = [
             'user_id' => $user->id,
             'total_amount' => $totalPrice,
             'shipping_fee' => $totalShippingFee,
             'discount_amount' => $totalDiscount,
             'final_amount' => $finalPrice,
+            'shipping_address'=> json_encode($shipping_address),
             'payment_method' => $data['payment_method'],
         ];
+
+        if($data['shipping_address'] == null){
+
+        }
 
         if($data['payment_method'] == PaymentMethod::BANK_TRANSFER) {
             $dataCreateOrder['status'] = OrderStatus::NOT_PAID;
@@ -161,7 +168,6 @@ class OrderService
 
             $dataUpdate = [
                 'status' => OrderStatus::PENDING,
-                //convert "vnp_PayDate": "20241219142301", to date not datetime
                 'payment_date' => date('Y-m-d', strtotime($data['vnp_PayDate'])),
                 'transaction_id' => $data['vnp_TransactionNo'], // mã giao dịch
                 'ref_id' => $data['vnp_TxnRef'], // mã đơn hàng
@@ -175,5 +181,36 @@ class OrderService
 
         // return redirect()->away(config('app.frontend_url'));
 
+    }
+
+    public function getAll($paginate = null, $with = [], $filter = null, $sort = null)
+    {
+        return $this->orderRepository->getAll($paginate, $with, $filter, $sort);
+    }
+
+    public function show($id, $with = [])
+    {
+        return $this->orderRepository->show($id, $with);
+    }
+
+    public function update($id, $data)
+    {
+        $status = $data['status'];
+
+        if($status == OrderStatus::CANCELLED) {
+            $order = $this->orderRepository->find($id);
+
+            if($order->payment_method == PaymentMethod::BANK_TRANSFER) {
+                if($order->transaction_id != null && $order->ref_id != null) {
+                    return abort(400, 'Đơn hàng đã được thanh toán không thể hủy');
+                }
+            }
+        }
+        return $this->orderRepository->update($id, $data);
+    }
+
+    public function myOrder($paginate = null, $with = [], $filter = null, $sort = null)
+    {
+        return $this->orderRepository->myOrder($paginate, $with, $filter, $sort);
     }
 }
