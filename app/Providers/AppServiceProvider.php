@@ -15,6 +15,8 @@ use App\Repositories\BookTransaction\BookTransactionRepository;
 use App\Repositories\BookTransaction\BookTransactionRepositoryInterface;
 use App\Repositories\Category\CategoryRepository;
 use App\Repositories\Category\CategoryRepositoryInterface;
+use App\Repositories\DiscountTiers\DiscountTiersRepository;
+use App\Repositories\DiscountTiers\DiscountTiersRepositoryInterface;
 use App\Repositories\Order\OrderRepository;
 use App\Repositories\Order\OrderRepositoryInterface;
 use App\Repositories\OrderItem\OrderItemRepository;
@@ -58,6 +60,7 @@ class AppServiceProvider extends ServiceProvider
         BookTransactionRepositoryInterface::class => BookTransactionRepository::class,
         AuthorsBookRepositoryInterface::class => AuthorsBookRepository::class,
         PromotionRepositoryInterface::class => PromotionRepository::class,
+        DiscountTiersRepositoryInterface::class=>DiscountTiersRepository::class
     ];
 
     public function register(): void

@@ -24,6 +24,12 @@ class OrderStatus
         ];
     }
 
+    public static function getLabelStatus($status)
+    {
+        $statuses = self::getStatuses();
+        return $statuses[$status] ?? '';
+    }
+
     public static function getAllStatuses()
     {
         return [

@@ -51,7 +51,12 @@ class OrderController extends Controller
 
     public function update(OrderRequest $request, $id)
     {
-        return $this->orderService->update($id, $request->all());
+        $result = $this->orderService->update($id, $request->all());
+
+        if($result){
+            return response()->json(['message' => 'Cập nhật thành công'], 200);
+        }
+        return response()->json(['message' => 'Cập nhật thất bại'], 400);
     }
 
     public function getMyOrder(Request $request)

@@ -6,22 +6,15 @@ class PaymentService
 {
     public function createPayment($data)
     {
-        //Thanh toán vnPay
-        // $order_id = $data['order_id'];
-
         $order_id = $data['order_id'];
 
-        $amount = $data['amount'] ?? 00;
-
-        // $amount = 100000;
+        $amount = ceil($data['amount']) ?? 0;
 
         $vnp_TmnCode = config('app.VnPay_tmncode'); // Mã website tại VNPAY
 
         $vnp_HashSecret = config('app.VnPay_hash_secret'); // Chuỗi bí mật
 
         $vnp_Url = config('app.VnPay_url'); // URL thanh toán
-
-        // $vnp_ReturnUrl = config('app.VnPay_return_url'); // URL trả về sau khi thanh toán
 
         $vnp_ReturnUrl = $data['vnp_ReturnUrl'] ?? null;
 
@@ -37,10 +30,6 @@ class PaymentService
 
         $vnp_Locale = 'vn';
 
-        // $startTime = date("YmdHis");
-
-        // $expire = date('YmdHis', strtotime('+15 minutes', strtotime($startTime)));
-
         $inputData = [
             "vnp_Version" => "2.1.0",
             "vnp_TmnCode" => $vnp_TmnCode,
@@ -53,11 +42,9 @@ class PaymentService
             "vnp_OrderType" => "billpayment",
             "vnp_ReturnUrl" => $vnp_ReturnUrl,
             "vnp_TxnRef" => $vnp_TxnRef,
-            // "vnp_ExpireDate" => $expire,
             "vnp_IpAddr" => $_SERVER['REMOTE_ADDR'],
         ];
 
-        // sắp xếp mảng theo key
         ksort($inputData);
         $query = "";
         $i = 0;
@@ -116,5 +103,9 @@ class PaymentService
             return true;
         }
         return false;
+    }
+
+    public function refund($data){
+
     }
 }

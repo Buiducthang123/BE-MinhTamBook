@@ -14,10 +14,8 @@ return new class extends Migration
         Schema::create('discount_tiers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('book_id')->constrained('books')->onDelete('cascade');
-            $table->tinyInteger('minimum_quantity')->comment('Số lượng tối thiểu');
-            $table->decimal('discount_rate', 5, 2)->comment('Tỷ lệ giảm giá');
-            $table->dateTime('start_date')->comment('Ngày bắt đầu');
-            $table->dateTime('end_date')->comment('Ngày kết thúc');
+            $table->unsignedInteger('minimum_quantity')->comment('Số lượng tối thiểu');
+            $table->decimal('price', 15, 2)->comment('Giá');
             $table->timestamps();
         });
     }

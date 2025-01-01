@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BookTransactionController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DiscountTiersController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PromotionController;
@@ -134,3 +135,13 @@ Route::prefix('promotions')->middleware(['auth:sanctum','admin'])->group(functio
 });
 Route::get('promotions', [PromotionController::class,'all'])->name('promotions.all');
 Route::get('promotions/{id}', [PromotionController::class,'show'])->name('promotions.show');
+
+
+// Discount Tiers Routes
+Route::prefix('discount-tiers')->middleware(['auth:sanctum','admin'])->group(function(){
+    Route::post('/', [DiscountTiersController::class, 'create'])->name('discount-tiers.create');
+    //createMany
+    Route::post('/create-many', [DiscountTiersController::class, 'createMany'])->name('discount-tiers.create-many');
+    Route::patch('/{id}', [DiscountTiersController::class, 'update'])->name('discount-tiers.update');
+    Route::delete('/{id}', [DiscountTiersController::class, 'delete'])->name('discount-tiers.delete');
+});

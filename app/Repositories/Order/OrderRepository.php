@@ -2,9 +2,11 @@
 
 namespace App\Repositories\Order;
 
+use App\Mail\OrderStatus;
 use App\Models\Order;
 use App\Repositories\BaseRepository;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 {
@@ -92,4 +94,10 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
     }
 
+    public function sendMailOrderStatus($order, $user)
+    {
+        $mail = new OrderStatus($order, $user);
+
+        Mail::to($user->email)->queue($mail);
+    }
 }

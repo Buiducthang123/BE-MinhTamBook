@@ -40,7 +40,11 @@ class BookService{
     public function getBookByCategory($category_id, $data){
         $paginate = $data['paginate'] ?? null;
         $with = $data['with'] ?? [];
-        return $this->bookRepository->getBookByCategory($category_id, $paginate, $with);
+        $filter = $data['filter'] ?? null;
+        $sort = $data['sort'] ?? null;
+        $limit = $data['limit'] ?? null;
+        $search = $data['search'] ?? null;
+        return $this->bookRepository->getBookByCategory($category_id, $paginate, $with, $filter, $limit, $search, $sort);
     }
 
     public function checkQuantity($id, $quantity){

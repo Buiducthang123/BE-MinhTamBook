@@ -125,7 +125,7 @@ return [
 
     'ghn_token' =>  env('GHN_TOKEN',''),
 
-    'shop_id' => env('GHN_SHOP_ID', 0),
+    'ghn_shop_id' => env('GHN_SHOP_ID', 0),
 
     'VnPay_return_url' => env('VNP_RETURN_URL', ''),
 

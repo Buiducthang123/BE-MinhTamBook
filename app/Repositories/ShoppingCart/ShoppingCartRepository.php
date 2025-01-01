@@ -17,7 +17,7 @@ class ShoppingCartRepository extends BaseRepository implements ShoppingCartRepos
     {
         $user = Auth::user();
         if ($user) {
-            return $user->booksInCart()->with(['category', 'publisher'])->get();
+            return $user->booksInCart()->with(['category', 'publisher','discountTiers'])->get();
         }
         return [];
     }
