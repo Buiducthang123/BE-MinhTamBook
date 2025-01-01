@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\BookTransactionStatus;
 use App\Enums\BookTransactionType;
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
@@ -51,8 +52,15 @@ class Book extends Model
             ->where('status', BookTransactionStatus::SUCCESS)
             ->sum('quantity');
         $export = (int) $export;
+
+        //Kiểm tra sách trong order bán ra
+        $orderExport = $this->orderItems()
+            ->whereHas('order', function ($query) {
+                $query->where('status', '!=', OrderStatus::CANCELLED);
+            })
+            ->sum('quantity');
         // Tổng số sách = import - export
-        return $import - $export;
+        return $import - $export - $orderExport;
     }
 
     public function getDiscountAttribute()

@@ -5,11 +5,10 @@ use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
 use App\Repositories\Book\BookRepositoryInterface;
 use App\Repositories\Order\OrderRepositoryInterface;
+use function Pest\Laravel\json;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-
-use function Pest\Laravel\json;
 
 class OrderService
 {
@@ -57,36 +56,68 @@ class OrderService
 
         $totalDiscount = 0; // tổng giảm giá
 
-        foreach ($itemOrder as $item) {
+        foreach ($itemOrder as $index => $item) {
             $totalQuantity += $item['quantity'];
 
-            $book = $books->where('id', $item['book_id'])->first();
+            $book = $books->where('id', $item['book_id'])->load('discountTiers')->first();
 
-            // tính tổng giá sản phẩm sau khi giảm giá
+            $discountTiers = $book->discountTiers ? $book->discountTiers->toArray() : [];
 
-            $totalPrice += ($book->price * (100- $book->discount)/100) * $item['quantity'];
+            usort($discountTiers, function ($a, $b) {
+                return $b['minimum_quantity'] <=> $a['minimum_quantity']; // Sắp xếp giảm dần theo số lượng tối thiểu
+            });
 
-            // tính tổng giảm giá
+            if ($user->role->name == 'company') {
+                $tierFound = collect($discountTiers)->first(function ($tier) use ($item) {
+                    return $item['quantity'] >= $tier['minimum_quantity'];
+                });
 
-            $totalDiscount += ($book->price * $book->discount/100) * $item['quantity'];
+                if ($tierFound) {
+
+                    $itemOrder[$index]['discount'] = 0;
+                    $itemOrder[$index]['price'] = $tierFound['price'];
+
+                    $totalDiscount += 0;
+                    $totalPrice += $tierFound['price'] * $item['quantity'];
+                } else {
+                    // tính tổng giảm giá
+                    $totalDiscount += ($book->price * $book->discount / 100) * $item['quantity'];
+                    $totalPrice += ($book->price * (100 - $book->discount) / 100) * $item['quantity'];
+                }
+
+            } else {
+                // tính tổng giá sản phẩm sau khi giảm giá
+                $totalPrice += ($book->price * (100 - $book->discount) / 100) * $item['quantity'];
+                // tính tổng giảm giá
+                $totalDiscount += ($book->price * $book->discount / 100) * $item['quantity'];
+            }
         }
 
-        if ($totalQuantity <= 10) {
+        if ($totalQuantity < 10) {
             foreach ($itemOrder as $item) {
                 $book = $books->where('id', $item['book_id'])->first();
 
                 $totalWeight += $book->weight * $item['quantity'];
 
-                $totalLength += $book->length * $item['quantity'];
-
-                $totalWidth += $book->width * $item['quantity'];
-
                 $totalHeight += $book->height * $item['quantity'];
             }
 
+            // Convert mảng
+            $booksArray = $books->toArray();
+
+            // Lấy chiều dài lớn nhất
+            $totalLength = max(array_map(function ($item) {
+                return $item['dimension_length'];
+            }, $booksArray));
+
+            // Lấy chiều rộng lớn nhất
+            $totalWidth = max(array_map(function ($item) {
+                return $item['dimension_width'];
+            }, $booksArray));
+
             $postData = [
                 'shop_id' => (int) config('app.ghn_shop_id'),
-                'service_id' => 53322,
+                'service_id' => 53321,
                 'to_district_id' => $shipping_address['district']['DistrictID'],
                 'to_ward_code' => $shipping_address['ward']['WardCode'],
                 'service_type_id' => 2,
@@ -100,6 +131,8 @@ class OrderService
                 'Content-Type' => 'application/json',
                 'token' => config('app.ghn_token'),
             ];
+
+            // return $postData;
 
             $response = Http::withHeaders($headerData)->post($apiUrl, $postData);
 
@@ -121,15 +154,15 @@ class OrderService
             'shipping_fee' => $totalShippingFee,
             'discount_amount' => $totalDiscount,
             'final_amount' => $finalPrice,
-            'shipping_address'=> json_encode($shipping_address),
+            'shipping_address' => json_encode($shipping_address),
             'payment_method' => $data['payment_method'],
         ];
 
-        if($data['shipping_address'] == null){
+        if ($data['shipping_address'] == null) {
 
         }
 
-        if($data['payment_method'] == PaymentMethod::BANK_TRANSFER) {
+        if ($data['payment_method'] == PaymentMethod::BANK_TRANSFER) {
             $dataCreateOrder['status'] = OrderStatus::NOT_PAID;
         }
 
@@ -142,12 +175,12 @@ class OrderService
 
             DB::commit();
 
-            if($data['payment_method'] == PaymentMethod::BANK_TRANSFER) {
+            if ($data['payment_method'] == PaymentMethod::BANK_TRANSFER) {
                 $url = $this->paymentService->createPayment([
                     'order_id' => $order->id,
                     'order_info' => 'Thanh toán đơn hàng',
                     'amount' => $finalPrice,
-                    'vnp_ReturnUrl' => config('app.url').'/api/order/'.$order->id.'/payment-return',
+                    'vnp_ReturnUrl' => config('app.url') . '/api/order/' . $order->id . '/payment-return',
                 ]);
                 return $url;
             } else {
@@ -164,7 +197,7 @@ class OrderService
     {
         $checkPayment = $this->paymentService->checkPayment($data);
 
-        if($checkPayment) {
+        if ($checkPayment) {
 
             $dataUpdate = [
                 'status' => OrderStatus::PENDING,
@@ -175,11 +208,11 @@ class OrderService
 
             $this->orderRepository->update($data['vnp_TxnRef'], $dataUpdate);
 
-            redirect()->away(config('app.frontend_url').'/checkout?status=success');
+            return redirect()->away(config('app.frontend_url') . '/checkout?status=success');
 
         }
 
-        return redirect()->away(config('app.frontend_url').'/checkout?status=fail');
+        return redirect()->away(config('app.frontend_url') . '/checkout?status=fail');
 
     }
 
@@ -197,16 +230,28 @@ class OrderService
     {
         $status = $data['status'];
 
-        if($status == OrderStatus::CANCELLED) {
+        if ($status == OrderStatus::CANCELLED) {
             $order = $this->orderRepository->find($id);
 
-            if($order->payment_method == PaymentMethod::BANK_TRANSFER) {
-                if($order->transaction_id != null && $order->ref_id != null) {
+            if ($order->payment_method == PaymentMethod::BANK_TRANSFER) {
+                if ($order->transaction_id != null && $order->ref_id != null) {
                     return abort(400, 'Đơn hàng đã được thanh toán không thể hủy');
                 }
             }
         }
-        return $this->orderRepository->update($id, $data);
+
+        $oldStatus = $this->orderRepository->find($id)->status;
+
+        $update = $this->orderRepository->update($id, $data);
+        if ($update) {
+            if ($oldStatus != $status) {
+                $order = $this->orderRepository->find($id)->with(['orderItems.book'])->first();
+                $user = $this->orderRepository->find($id)->user;
+                $this->orderRepository->sendMailOrderStatus($order, $user);
+            }
+            return $update;
+        }
+        return false;
     }
 
     public function myOrder($paginate = null, $with = [], $filter = null, $sort = null)

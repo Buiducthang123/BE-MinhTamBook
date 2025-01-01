@@ -4,6 +4,7 @@ namespace App\Repositories\Promotion;
 
 use App\Models\Promotion;
 use App\Repositories\BaseRepository;
+use Carbon\Carbon;
 
 class PromotionRepository extends BaseRepository implements PromotionRepositoryInterface
 {
@@ -21,6 +22,8 @@ class PromotionRepository extends BaseRepository implements PromotionRepositoryI
         // }
         $query->with(['books']);
 
+        $query->orderBy('start_date', 'asc');
+
         if ($filter) {
             $filter = json_decode($filter, true);
             $title = $filter['title'] ?? null;
@@ -32,15 +35,17 @@ class PromotionRepository extends BaseRepository implements PromotionRepositoryI
             }
 
             if ($start_date) {
-                $query->where('start_date', '>=', $start_date);
+                //promotion chưa kết thúc tính từ ngày hiện tại
+                $query->where('end_date', '>=', Carbon::parse($start_date));
             }
 
             if ($end_date) {
-                $query->where('end_date', '<=', $end_date);
+                $query->where('end_date', '<=', Carbon::parse($end_date));
             }
 
             if($start_date && $end_date){
-                $query->whereBetween('start_date', [$start_date, $end_date]);
+                $query->where('start_date', '>=', Carbon::parse($start_date))
+                ->where('end_date', '<=', Carbon::parse($end_date));
             }
         }
 
