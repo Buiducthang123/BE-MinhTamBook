@@ -116,9 +116,13 @@ Route::prefix('shopping-carts')->middleware('auth:sanctum')->group(function(){
 
 //Payment Routes
 
-Route::prefix('payments')->middleware('auth:sanctum')->group(function(){
-    Route::post('/', [PaymentController::class, 'create'])->name('payments.create');
+Route::prefix('payments')->middleware(['auth:sanctum','admin'])->group(function(){
+    // Route::post('/', [PaymentController::class, 'create'])->name('payments.create');
+    // Route::get('/{id}', [PaymentController::class, 'show'])->name('payments.show');
+    Route::get('/', [PaymentController::class, 'getAll'])->name('payments.all');
 });
+Route::get('my-payments', [PaymentController::class, 'getMyPayment'])->middleware('auth:sanctum')->name('payments.my-payments');
+
 
 
 //Order Routes
@@ -161,3 +165,4 @@ Route::get('/statistics/top-10-customer', [StatisticalController::class, 'getTop
 Route::get('/reviews', [ReviewController::class, 'getAll'])->middleware(['auth:sanctum','admin'])->name('reviews.all');
 Route::post('/reviews', [ReviewController::class, 'create'])->middleware('auth:sanctum')->name('reviews.create');
 Route::patch('/reviews/{id}', [ReviewController::class, 'update'])->middleware(['auth:sanctum','admin'])->name('reviews.update');
+Route::get('/reviews/book/{book_id}', [ReviewController::class, 'showByBook'])->name('reviews.show-by-book');

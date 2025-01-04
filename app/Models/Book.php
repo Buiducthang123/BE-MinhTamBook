@@ -37,7 +37,7 @@ class Book extends Model
         ];
     }
 
-    protected $appends = ['quantity','rating'];
+    protected $appends = ['quantity','rating','total_review'];
     public function getQuantityAttribute()
     {
         // Lọc các giao dịch import với điều kiện status = success
@@ -92,6 +92,11 @@ class Book extends Model
             $rating = $reviews->avg('rating');
         }
         return $rating;
+    }
+
+    public function getTotalReviewAttribute()
+    {
+        return $this->reviews->count();
     }
 
     public function getThumbnailAttribute($value)

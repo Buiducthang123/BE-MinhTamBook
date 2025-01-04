@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Enums\OrderStatus;
 use App\Enums\PaymentMethod;
+use App\Enums\PaymentType;
 use App\Repositories\Book\BookRepositoryInterface;
 use App\Repositories\Order\OrderRepositoryInterface;
 use function Pest\Laravel\json;
@@ -177,7 +178,7 @@ class OrderService
             DB::commit();
 
             if ($data['payment_method'] == PaymentMethod::BANK_TRANSFER) {
-                $url = $this->paymentService->createPayment([
+                $url = $this->paymentService->createPaymentUrl([
                     'order_id' => $order->id,
                     'order_info' => 'Thanh toán đơn hàng',
                     'amount' => $finalPrice,
@@ -206,6 +207,17 @@ class OrderService
                 'transaction_id' => $data['vnp_TransactionNo'], // mã giao dịch
                 'ref_id' => $data['vnp_TxnRef'], // mã đơn hàng
             ];
+
+            $order = $this->orderRepository->find($id);
+
+            $dataPayment = [
+                'order_id' => $order->id,
+                'user_id' => $order->user_id,
+                'amount' => $data['vnp_Amount'] / 100,
+                'transaction_type' => PaymentType::DEPOSIT,
+            ];
+
+            $this->paymentService->create($dataPayment);
 
             $this->orderRepository->update($data['vnp_TxnRef'], $dataUpdate);
 
@@ -242,6 +254,16 @@ class OrderService
                         $data['ref_id'] = null;
                         $data['transaction_id'] = null;
                         $data['payment_date'] = null;
+
+                        $dataPayment = [
+                            'order_id' => $order->id,
+                            'user_id' => $order->user_id,
+                            'amount' => $order->final_amount,
+                            'transaction_type' => PaymentType::REFUND,
+                        ];
+
+                        $this->paymentService->create($dataPayment);
+
                     } else {
                         return false;
                     }

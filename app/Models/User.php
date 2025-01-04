@@ -85,4 +85,9 @@ class User extends Authenticatable implements MustVerifyEmail
             ->withPivot('quantity','id')
             ->withTimestamps();
     }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
 }

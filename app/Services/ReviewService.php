@@ -26,4 +26,9 @@ class ReviewService
     {
         return $this->reviewRepository->update($id, $data);
     }
+
+    public function showByBook($paginate = 10, $book_id, $with = [])
+    {
+        return $this->reviewRepository->showByBook($paginate, $book_id, $with);
+    }
 }
