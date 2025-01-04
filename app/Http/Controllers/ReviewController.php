@@ -41,4 +41,13 @@ class ReviewController extends Controller
         }
         return response()->json(['message' => 'Cập nhật thất bại'], 400);
     }
+
+    public function showByBook(Request $request, $book_id)
+    {
+        $paginate = $request->get('paginate') ?? 10;
+
+        $with = $request->get('with') ?? [];
+
+        return $this->reviewService->showByBook($paginate, $book_id, $with);
+    }
 }

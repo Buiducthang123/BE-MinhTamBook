@@ -3,13 +3,21 @@
 namespace App\Services;
 
 use App\Models\Order;
-use Carbon\Carbon;
+use App\Repositories\Payment\PaymentRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class PaymentService
 {
-    public function createPayment($data)
+    protected $paymentRepository;
+
+    public function __construct(PaymentRepositoryInterface $paymentRepository)
+    {
+        $this->paymentRepository = $paymentRepository;
+    }
+
+    //create payment url
+    public function createPaymentUrl($data)
     {
         $order_id = $data['order_id'];
 
@@ -111,8 +119,6 @@ class PaymentService
 
     public function refund(Order $order)
     {
-        // $booking = Booking::where('order_id', $request->order_id)->where('room_id', $request->room_id)->first();
-        // $payment = Payment::where('order_id', $request->order_id)->first();
         $user = Auth::user();
 
         $vnp_TmnCode = config('app.VnPay_tmncode'); // Mã website tại VNPAY
@@ -121,19 +127,19 @@ class PaymentService
 
         $vnp_ApiUrl = 'https://sandbox.vnpayment.vn/merchant_webapi/api/transaction';
 
-        $vnp_RequestId = rand(1, 10000);  // ID yêu cầu
+        $vnp_RequestId = rand(1, 10000); // ID yêu cầu
 
-        $vnp_Command = 'refund';  // API command
+        $vnp_Command = 'refund'; // API command
 
         $vnp_TransactionType = '03'; // Loại giao dịch (03 là hoàn tiền)
 
-        $vnp_TxnRef = $order->ref_id;  // Mã giao dịch cần hoàn tiền
+        $vnp_TxnRef = $order->ref_id; // Mã giao dịch cần hoàn tiền
 
-        $vnp_Amount = $order->final_amount * 100;  // Số tiền hoàn, phải nhân 100
+        $vnp_Amount = $order->final_amount * 100; // Số tiền hoàn, phải nhân 100
 
         $vnp_OrderInfo = 'Hoàn tiền giao dịch ' . $vnp_TxnRef;
 
-        $vnp_CreateDate = now()->format( 'YmdHis');
+        $vnp_CreateDate = now()->format('YmdHis');
 
         $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
 
@@ -168,7 +174,7 @@ class PaymentService
             $inputData['vnp_CreateBy'],
             $inputData['vnp_CreateDate'],
             $inputData['vnp_IpAddr'],
-            $inputData['vnp_OrderInfo']
+            $inputData['vnp_OrderInfo'],
         ]);
 
         // Tạo SecureHash với SHA512 và khóa bí mật
@@ -179,7 +185,6 @@ class PaymentService
         // Gửi yêu cầu tới VNPay
         $response = Http::post($vnp_ApiUrl, $inputData);
 
-        // Xử lý kết quả
         if ($response->successful()) {
             $responseData = $response->json();
             $vnp_ResponseCode = $responseData['vnp_ResponseCode'] ?? null;
@@ -187,13 +192,40 @@ class PaymentService
 
             if ($vnp_ResponseCode === '00') {
                 return true;
-
             } else {
                 return false;
             }
         } else {
             return false;
         }
+    }
+
+    //
+    public function create($data = [])
+    {
+        $result = $this->paymentRepository->create($data);
+        if ($result) {
+            return $result;
+        }
+        return false;
+    }
+
+    public function getAll($paginate = null, $with = [], $filter = null, $sort = null)
+    {
+        $result = $this->paymentRepository->getAll($paginate, $with, $filter, $sort);
+        return $result;
+    }
+
+    public function getMyPayment($paginate = null, $with = [], $filter = null, $sort = null)
+    {
+        $user_id = Auth::id();
+
+        if (!$user_id) {
+            throw new \Exception('Vui lòng đăng nhập');
+        }
+
+        $result = $this->paymentRepository->getMyPayment($paginate, $with, $filter, $sort, $user_id);
+        return $result;
     }
 
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderRequest;
 use App\Services\OrderService;
+use App\Services\PaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -14,10 +15,13 @@ class OrderController extends Controller
 
     protected $orderService;
 
-    public function __construct(OrderItemController $orderItemController, OrderService $orderService)
+    protected $paymentService;
+
+    public function __construct(OrderItemController $orderItemController, OrderService $orderService, PaymentService $paymentService)
     {
         $this->orderItemController = $orderItemController;
         $this->orderService = $orderService;
+        $this->paymentService = $paymentService;
     }
     public function create(OrderRequest $request)
     {

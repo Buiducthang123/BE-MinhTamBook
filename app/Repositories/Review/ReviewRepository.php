@@ -41,4 +41,13 @@ class ReviewRepository extends BaseRepository implements ReviewRepositoryInterfa
 
         return $paginate ? $query->paginate($paginate) : $query->get();
     }
+
+    public function showByBook($paginate = 10, $book_id, $with = [])
+    {
+        $query = $this->model->query();
+        if($with){
+            $query->with($with);
+        }
+        return $query->where('book_id', $book_id)->paginate($paginate);
+    }
 }

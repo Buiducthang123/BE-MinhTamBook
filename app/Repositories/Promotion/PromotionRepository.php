@@ -17,9 +17,6 @@ class PromotionRepository extends BaseRepository implements PromotionRepositoryI
     {
         $query = $this->model->query();
 
-        // if (!empty($with)) {
-        //     $query->with($with);
-        // }
         $query->with(['books']);
 
         $query->orderBy('start_date', 'asc');
