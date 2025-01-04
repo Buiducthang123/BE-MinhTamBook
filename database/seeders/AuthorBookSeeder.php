@@ -20,11 +20,13 @@ class AuthorBookSeeder extends Seeder
         $authorIds = Author::pluck('id')->toArray();
         $bookIds = Book::pluck('id')->toArray();
 
-        for($i = 0; $i < 100; $i++){
-            AuthorBook::create([
-                'author_id' => $faker->randomElement($authorIds),
-                'book_id' => $faker->randomElement($bookIds),
-            ]);
+        if(count($bookIds) > 0 && count($authorIds) > 0){
+            for ($i = 0; $i < 100; $i++) {
+                AuthorBook::create([
+                    'author_id' => $faker->randomElement($authorIds),
+                    'book_id' => $faker->randomElement($bookIds),
+                ]);
+            }
         }
     }
 }

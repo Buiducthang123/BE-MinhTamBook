@@ -12,4 +12,8 @@ interface OrderRepositoryInterface extends RepositoryInterface
     public function myOrder($paginate = null, $with = [], $filter = null, $sort = null);
 
     public function sendMailOrderStatus($order, $user);
+
+    public function getTotalRevenue($start_date = null, $end_date = null);
+
+    public function getRevenueByTime($start_date, $end_date,$optionShow = 'all');
 }

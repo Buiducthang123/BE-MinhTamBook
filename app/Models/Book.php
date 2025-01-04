@@ -37,7 +37,7 @@ class Book extends Model
         ];
     }
 
-    protected $appends = ['quantity'];
+    protected $appends = ['quantity','rating'];
     public function getQuantityAttribute()
     {
         // Lọc các giao dịch import với điều kiện status = success
@@ -80,6 +80,18 @@ class Book extends Model
             }
         }
         return $this->attributes['discount'];
+    }
+
+    public function getRatingAttribute()
+    {
+        // Tính trung bình rating của sách
+        //mặc định là 5 sao
+        $rating = 5;
+        $reviews = $this->reviews;
+        if ($reviews->count() > 0) {
+            $rating = $reviews->avg('rating');
+        }
+        return $rating;
     }
 
     public function getThumbnailAttribute($value)

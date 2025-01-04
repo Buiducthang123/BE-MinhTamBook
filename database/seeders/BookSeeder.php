@@ -19,6 +19,8 @@ class BookSeeder extends Seeder
         $categoryIds = Category::pluck('id')->toArray();
         $publisherIds = Publisher::pluck('id')->toArray();
 
+        //book in category_id 10
+
         for ($i = 0; $i < 100; $i++) {
             Book::create([
                 'category_id' => $faker->randomElement($categoryIds),

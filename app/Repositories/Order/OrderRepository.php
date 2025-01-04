@@ -3,9 +3,11 @@
 namespace App\Repositories\Order;
 
 use App\Mail\OrderStatus;
+use App\Enums\OrderStatus as EnumsOrderStatus;
 use App\Models\Order;
 use App\Repositories\BaseRepository;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class OrderRepository extends BaseRepository implements OrderRepositoryInterface
@@ -100,4 +102,69 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
         Mail::to($user->email)->queue($mail);
     }
+
+    public function getTotalRevenue($start_date = null, $end_date = null)
+    {
+        $query = $this->model->where('status', EnumsOrderStatus::DELIVERED);
+
+        if ($start_date && $end_date) {
+            $query->whereBetween('created_at', [$start_date, $end_date]);
+        }
+
+        return $query->sum('total_amount');
+    }
+
+    public function getRevenueByTime($start_date, $end_date, $optionShow = 'all')
+    {
+        $query = $this->model->where('status', EnumsOrderStatus::DELIVERED);
+
+        $timeColumn = null;
+
+        switch ($optionShow) {
+            case 'today':
+                $query->whereDate('created_at', now());
+                $timeColumn = 'HOUR(created_at)';
+                break;
+            case 'yesterday':
+                $query->whereDate('created_at', now()->subDay());
+                $timeColumn = 'HOUR(created_at)';
+                break;
+            case 'this_week':
+                $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                $timeColumn = 'DAYOFWEEK(created_at)';
+                break;
+            case 'last_week':
+                $query->whereBetween('created_at', [now()->subWeek()->startOfWeek(), now()->subWeek()->endOfWeek()]);
+                $timeColumn = 'DAYOFWEEK(created_at)';
+                break;
+            case 'this_month':
+                $query->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()]);
+                $timeColumn = 'DAY(created_at)';
+                break;
+            case 'last_month':
+                $query->whereBetween('created_at', [now()->subMonth()->startOfMonth(), now()->subMonth()->endOfMonth()]);
+                $timeColumn = 'DAY(created_at)';
+                break;
+            case 'this_year':
+                $query->whereBetween('created_at', [now()->startOfYear(), now()->endOfYear()]);
+                $timeColumn = 'MONTH(created_at)';
+                break;
+            case 'last_year':
+                $query->whereBetween('created_at', [now()->subYear()->startOfYear(), now()->subYear()->endOfYear()]);
+                $timeColumn = 'MONTH(created_at)';
+                break;
+            default:
+                $query->whereBetween('created_at', [$start_date, $end_date]);
+                $timeColumn = 'YEAR(created_at)';
+        }
+
+        if ($timeColumn) {
+            $query->select(DB::raw("$timeColumn as time"), DB::raw('SUM(total_amount) as revenue'))
+                ->groupBy('time');
+        }
+
+        return $query->get();
+    }
+
+
 }
