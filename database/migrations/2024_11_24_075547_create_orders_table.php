@@ -36,7 +36,7 @@ return new class extends Migration
             $table->decimal('discount_amount', 10, 2)->default(0)->comment('Số tiền giảm giá');
             $table->decimal('final_amount', 15, 2)->comment('Số tiền cần thanh toán');//đã cộng phí vận chuyển và voucher
             $table->enum('payment_method', PaymentMethod::getAllMethods())->comment('Phương thức thanh toán');
-            $table->date('payment_date')->nullable()->comment('Ngày thanh toán');
+            $table->string('payment_date')->nullable()->comment('Ngày thanh toán');
             $table->string('voucher_code', 255)->nullable()->comment('Mã giảm giá');
             $table->unsignedBigInteger('transaction_id')->nullable()->comment('Mã giao dịch');
             $table->unsignedBigInteger('ref_id')->nullable()->comment('Mã giao dịch hoàn');

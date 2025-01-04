@@ -10,6 +10,7 @@ class OrderStatus
     const DELIVERED = 5; // Đã giao hàng
     const CANCELLED = 6; // Đã hủy
     const NOT_PAID = 7; // Chưa chuyển khoản
+    const REQUEST_CANCEL = 8; // Yêu cầu hủy
 
     public static function getStatuses()
     {
@@ -21,6 +22,7 @@ class OrderStatus
             self::DELIVERED => 'Đã giao hàng',
             self::CANCELLED => 'Đã hủy',
             self::NOT_PAID => 'Chưa chuyển khoản',
+            self::REQUEST_CANCEL => 'Yêu cầu hủy',
         ];
     }
 
@@ -40,6 +42,7 @@ class OrderStatus
             self::DELIVERED,
             self::CANCELLED,
             self::NOT_PAID,
+            self::REQUEST_CANCEL,
         ];
     }
 }

@@ -17,4 +17,7 @@ interface BookRepositoryInterface extends RepositoryInterface
     public function checkQuantity($id, $quantity);
 
     public function getBookInArrId($arrId, $with = []);
+
+    //thống kê top 10 sách bán chạy
+    public function getTop10BestSeller($start_date, $end_date, $optionShow = 'all');
 }

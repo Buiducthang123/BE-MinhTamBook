@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
             $table->foreignId(('user_id'))->constrained('users')->onDelete('cascade');
+            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->foreignId('book_id')->constrained('books')->onDelete('cascade');
             $table->enum('rating', [1, 2, 3, 4, 5])->comment('Đánh giá');
             $table->text('comment')->nullable()->comment('Bình luận');

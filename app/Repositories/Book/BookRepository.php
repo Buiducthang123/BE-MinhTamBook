@@ -53,14 +53,14 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface
             $priceFrom = $filter['priceFrom'] ?? null;
             $priceTo = $filter['priceTo'] ?? null;
 
-            if($priceFrom && $priceTo){
+            if ($priceFrom && $priceTo) {
                 $query->whereBetween('price', [$priceFrom, $priceTo]);
             }
 
             //Lấy book chưa thuộc promotion nào
             $promotion_null = $filter['promotion_null'] ?? null;
 
-            if($promotion_null){
+            if ($promotion_null) {
                 $query->whereNull('promotion_id');
             }
         }
@@ -106,7 +106,6 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface
 
         if ($search) {
             $search = json_decode($search, true);
-
             $title = $search['title'] ?? null;
 
             if ($title) {
@@ -182,7 +181,7 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface
         }
     }
 
-    public function getBookByCategory($category_id, $paginate =null, $with = [], $filter = null, $limit = null, $search = null, $sort = null)
+    public function getBookByCategory($category_id, $paginate = null, $with = [], $filter = null, $limit = null, $search = null, $sort = null)
     {
         $query = $this->model->query();
 
@@ -280,6 +279,53 @@ class BookRepository extends BaseRepository implements BookRepositoryInterface
         $query->whereIn('id', $arrId);
 
         return $query->get();
+    }
+
+    public function getTop10BestSeller($start_date, $end_date, $optionShow = 'all')
+    {
+        $query = $this->model->query();
+
+        $query->join('order_items', 'order_items.book_id', '=', 'books.id')
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->select(
+                'books.id',
+                'books.title',
+                'books.cover_image',
+                'books.price',
+                'books.discount',
+                'orders.total_amount',
+
+                DB::raw('SUM(order_items.quantity) as total_quantity')
+            )
+            ->whereBetween('orders.created_at', [$start_date, $end_date])
+            ->groupBy('books.id', 'books.title','books.cover_image','books.price','books.discount','orders.total_amount')
+            ->orderBy('total_quantity', 'desc')
+            ->orderBy('total_quantity', 'desc')
+            ->limit(10); // Giới hạn lấy 10 kết quả
+
+        switch ($optionShow) {
+            case 'all':
+                break;
+            case 'today':
+                $query->whereDate('orders.created_at', now());
+                break;
+            case 'yesterday':
+                $query->whereDate('orders.created_at', now()->subDay());
+                break;
+            case 'this_week':
+                $query->whereBetween('orders.created_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                break;
+            case 'this_month':
+                $query->whereMonth('orders.created_at', now()->month);
+                break;
+            case 'this_year':
+                $query->whereYear('orders.created_at', now()->year);
+                break;
+            default:
+                break;
+        }
+
+        return $query->take(10)->get();
     }
 
 }

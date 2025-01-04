@@ -10,9 +10,11 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\PublisherController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShippingAddressController;
 use App\Http\Controllers\ShoppingCartController;
+use App\Http\Controllers\StatisticalController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyEmailController;
 use Illuminate\Http\Request;
@@ -126,6 +128,7 @@ Route::get('/orders', [OrderController::class, 'getAll'])->middleware(['auth:san
 Route::get('/order/{id}', [OrderController::class, 'show'])->middleware(['auth:sanctum','admin'])->name('orders.show');
 Route::patch('/order/{id}', [OrderController::class, 'update'])->middleware(['auth:sanctum','admin'])->name('orders.update');
 Route::get('/my-orders', [OrderController::class, 'getMyOrder'])->middleware('auth:sanctum')->name('orders.my-orders');
+Route::post('/order/{id}/cancel', [OrderController::class, 'cancelOrder'])->middleware('auth:sanctum')->name('orders.cancel-order');
 
 //Promotion Routes
 Route::prefix('promotions')->middleware(['auth:sanctum','admin'])->group(function(){
@@ -145,3 +148,16 @@ Route::prefix('discount-tiers')->middleware(['auth:sanctum','admin'])->group(fun
     Route::patch('/{id}', [DiscountTiersController::class, 'update'])->name('discount-tiers.update');
     Route::delete('/{id}', [DiscountTiersController::class, 'delete'])->name('discount-tiers.delete');
 });
+
+
+//Statistics Routes
+Route::get('/statistics', [StatisticalController::class, 'index'])->middleware(['auth:sanctum','admin'])->name('statistics');
+Route::get('/statistics/revenue', [StatisticalController::class, 'getRevenueByTime'])->middleware(['auth:sanctum','admin'])->name('statistics.revenue');
+Route::get('/statistics/orders', [StatisticalController::class, 'getOrdersByTime'])->middleware(['auth:sanctum','admin'])->name('statistics.orders');
+Route::get('/statistics/top-10-best-seller', [StatisticalController::class, 'getTop10BestSeller'])->middleware(['auth:sanctum','admin'])->name('statistics.top-10-best-seller');
+Route::get('/statistics/top-10-customer', [StatisticalController::class, 'getTop10Customer'])->middleware(['auth:sanctum','admin'])->name('statistics.top-10-customer');
+
+//Review Routes
+Route::get('/reviews', [ReviewController::class, 'getAll'])->middleware(['auth:sanctum','admin'])->name('reviews.all');
+Route::post('/reviews', [ReviewController::class, 'create'])->middleware('auth:sanctum')->name('reviews.create');
+Route::patch('/reviews/{id}', [ReviewController::class, 'update'])->middleware(['auth:sanctum','admin'])->name('reviews.update');

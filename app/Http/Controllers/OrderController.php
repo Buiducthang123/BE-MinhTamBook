@@ -76,4 +76,20 @@ class OrderController extends Controller
         }
         return $this->orderService->myOrder($paginate, $with, $filter, $sort);
     }
+
+    public function cancelOrder($id, Request $request)
+    {
+        $status = $request->get('status');
+
+        try {
+            $result = $this->orderService->cancelOrder($id, $status);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+
+        if($result){
+            return response()->json(['message' => 'Hủy đơn hàng thành công'], 200);
+        }
+        return response()->json(['message' => 'Hủy đơn hàng thất bại'], 400);
+    }
 }

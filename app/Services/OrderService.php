@@ -156,6 +156,7 @@ class OrderService
             'final_amount' => $finalPrice,
             'shipping_address' => json_encode($shipping_address),
             'payment_method' => $data['payment_method'],
+            'note' => $data['note'],
         ];
 
         if ($data['shipping_address'] == null) {
@@ -201,7 +202,7 @@ class OrderService
 
             $dataUpdate = [
                 'status' => OrderStatus::PENDING,
-                'payment_date' => date('Y-m-d', strtotime($data['vnp_PayDate'])),
+                'payment_date' => $data['vnp_PayDate'], // ngày thanh toán
                 'transaction_id' => $data['vnp_TransactionNo'], // mã giao dịch
                 'ref_id' => $data['vnp_TxnRef'], // mã đơn hàng
             ];
@@ -235,7 +236,15 @@ class OrderService
 
             if ($order->payment_method == PaymentMethod::BANK_TRANSFER) {
                 if ($order->transaction_id != null && $order->ref_id != null) {
-                    return abort(400, 'Đơn hàng đã được thanh toán không thể hủy');
+                    $refund = $this->paymentService->refund($order);
+                    if ($refund) {
+                        $data['status'] = OrderStatus::CANCELLED;
+                        $data['ref_id'] = null;
+                        $data['transaction_id'] = null;
+                        $data['payment_date'] = null;
+                    } else {
+                        return false;
+                    }
                 }
             }
         }
@@ -257,5 +266,30 @@ class OrderService
     public function myOrder($paginate = null, $with = [], $filter = null, $sort = null)
     {
         return $this->orderRepository->myOrder($paginate, $with, $filter, $sort);
+    }
+
+    public function cancelOrder($id, $status = null){
+        $user = Auth::user();
+        $order = $this->orderRepository->find($id);
+
+        if (!$status || !in_array($order->status, [OrderStatus::PENDING, OrderStatus::REQUEST_CANCEL])) {
+            throw new \Exception('Trạng thái hủy đơn hàng không hợp lệ');
+        }
+
+        if($order->user_id != $user->id){
+            throw new \Exception('Bạn không có quyền hủy đơn hàng này');
+        }
+
+        if($order->status == OrderStatus::CANCELLED){
+            throw new \Exception('Đơn hàng đã được hủy');
+        }
+
+        $result = $this->orderRepository->update($id, ['status' => $status]);
+
+        if($result){
+            return true;
+        }
+
+        return false;
     }
 }
