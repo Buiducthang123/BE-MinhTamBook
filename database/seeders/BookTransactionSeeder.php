@@ -24,7 +24,8 @@ class BookTransactionSeeder extends Seeder
             for ($i = 0; $i < 20; $i++) {
                 $bookId = $faker->randomElement($bookIds);
                 $type = $faker->randomElement(BookTransactionType::getValues());
-                $status = $faker->randomElement(BookTransactionStatus::getValues());
+                // $status = $faker->randomElement(BookTransactionStatus::getValues());
+                $status = BookTransactionStatus::SUCCESS;
                 $quantity = $faker->numberBetween(1, 10);
                 $price = $faker->numberBetween(10000, 100000);
                 $date = Carbon::create('2000', '01', '01');

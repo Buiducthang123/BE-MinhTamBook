@@ -276,7 +276,8 @@ class OrderService
         $update = $this->orderRepository->update($id, $data);
         if ($update) {
             if ($oldStatus != $status) {
-                $order = $this->orderRepository->find($id)->with(['orderItems.book'])->first();
+                $order = $this->orderRepository->find($id);
+                $order = $order->load(['orderItems','orderItems.book']);
                 $user = $this->orderRepository->find($id)->user;
                 $this->orderRepository->sendMailOrderStatus($order, $user);
             }
