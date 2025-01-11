@@ -21,7 +21,7 @@
         }
 
         .email-container {
-            max-width: 600px;
+            max-width: 900px;
             margin: 0 auto;
             background-color: #ffffff;
             border-radius: 8px;
@@ -85,6 +85,88 @@
         .button:hover {
             background-color: #0052CC;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        img {
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        td img {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        img {
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        td img {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .text-right {
+            text-align: right;
+        }
     </style>
 </head>
 
@@ -114,15 +196,14 @@
                         <br>
                         Số điện thoại: {{ $order->shipping_address->receiver_phone_number }}<br>
                     </p>
-                    <p>
-                        Tổng số tiền: {{ $order }}₫
+                    <p style="font-weight: 600">
+                        Tổng số tiền: {{ $order['final_amount'] }}₫
                     </p>
                 </div>
-                {{json_decode($order['order_items'])}}
-                <hr>
-                {{$order['order_items']}}
 
-                @if (!empty($order->order_items))
+                <hr>
+
+                @if (!empty($order['orderItems']))
                     <table>
                         <thead>
                             <tr>
@@ -130,23 +211,27 @@
                                 <th>Hình ảnh</th>
                                 <th>Tên sách</th>
                                 <th>Số lượng</th>
-                                <th>Giá</th>
-                                <th>Giảm giá</th>
-                                <th>Thành tiền</th>
+                                <th class="text-right">Giá</th>
+                                <th class="text-right">Giảm giá</th>
+                                <th class="text-right">Thành tiền</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($order['order_items'] as $index => $item)
+                            @foreach ($order['orderItems'] as $index => $item)
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
-                                    <td><img src="{{ $item['book']['cover_image'] }}"
-                                            alt="{{ $item['book']['title'] }}" style="width: 50px;"></td>
-                                    <td>{{ $item['book']['title'] }}</td>
+                                    <td>
+                                        <img src="{{ $item['book']['cover_image'] }}"
+                                            alt="{{ $item['book']['title'] }}" style="width: 50px; height: 50px;">
+                                    </td>
+                                    <td style="width: 250px;">{{ $item['book']['title'] }}</td>
                                     <td>{{ $item['quantity'] }}</td>
-                                    <td>{{ number_format($item['price'], 0, ',', '.') }} đ</td>
-                                    <td>{{ $item['discount'] }}%</td>
-                                    <td>{{ number_format($item['price'] * $item['quantity'] * (1 - $item['discount'] / 100), 0, ',', '.') }}
-                                        đ</td>
+                                    <td class="text-right">{{ number_format($item['price'], 0, ',', '.') }} đ</td>
+                                    <td class="text-right">{{ $item['discount'] }}%</td>
+                                    <td class="text-right">
+                                        {{ number_format($item['price'] * $item['quantity'] * (1 - $item['discount'] / 100), 0, ',', '.') }}
+                                        đ
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -155,8 +240,12 @@
                     <p>Không có sản phẩm nào trong đơn hàng.</p>
                 @endif
 
+                @php
 
-                <a href="" class="button">Xem chi tiết đơn hàng</a>
+                    $fe_url = config('app.frontend_url') . '/customer/orders';
+                @endphp
+
+                <a href="{{ $fe_url }}" class="button">Xem chi tiết đơn hàng</a>
             </div>
             <div class="footer">
                 Cảm ơn bạn đã mua sắm tại cửa hàng của chúng tôi!
