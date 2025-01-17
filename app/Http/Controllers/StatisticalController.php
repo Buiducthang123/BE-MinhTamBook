@@ -69,7 +69,27 @@ class StatisticalController extends Controller
         $optionShow = $request->input('optionShow', 'all');
         [$start_date, $end_date] = $this->getDateRange($optionShow, $request);
 
-        $revenueData = $this->statisticalService->getRevenueByTime($start_date, $end_date, $optionShow);
+        $chartV2StartDate = null;
+        $chartV2EndDate = null;
+
+        //decode dateTimeDetail
+        // const statisticOrderQuery = reactive({
+        //     optionShow: timeSelection.value,
+        //     dateTimeDetail : {
+        //         start: dateRangeSelect.value[0].format('YYYY-MM-DD'),
+        //         end: dateRangeSelect.value[1].format('YYYY-MM-DD')
+        //     }
+        // });
+
+
+        $dateTimeDetail = json_decode($request->input('dateTimeDetail'), true);
+
+        if($dateTimeDetail){
+            $chartV2StartDate = $dateTimeDetail['start'];
+            $chartV2EndDate = $dateTimeDetail['end'];
+        }
+
+        $revenueData = $this->statisticalService->getRevenueByTime($start_date, $end_date, $optionShow, $chartV2StartDate, $chartV2EndDate);
 
         return response()->json($revenueData);
     }

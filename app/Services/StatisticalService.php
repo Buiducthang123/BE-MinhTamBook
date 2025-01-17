@@ -72,7 +72,7 @@ class StatisticalService
         $totalCategory = $this->categoryRepository->getAll()->count();
 
         //tính tổng số nhà xuất bản
-        $totalPublisher = $this->bookRepository->getAll()->count();
+        $totalPublisher = $this->publisherRepository->getAll()->count();
 
         //tính tổng số tác giả
         $totalAuthor = $this->authorRepository->getAll()->count();
@@ -155,7 +155,7 @@ class StatisticalService
 
         ];
     }
-    public function getRevenueByTime($start_date, $end_date, $optionShow)
+    public function getRevenueByTime($start_date, $end_date, $optionShow, $chartV2StartDate, $chartV2EndDate)
     {
         $orderData = [];
         $labels = [];
@@ -230,9 +230,14 @@ class StatisticalService
                 }
         }
 
+        $dataChartV2 = [];
+
+        if($chartV2StartDate && $chartV2EndDate){
+            $dataChartV2 = $this->orderRepository->getRevenueByRange($chartV2StartDate, $chartV2EndDate);
+        }
         return [
-            'labels' => $labels,
-            'data' => $orderData,
+            'dataChartV1' => $orderData,
+            'dataChartV2' => $dataChartV2,
         ];
     }
 

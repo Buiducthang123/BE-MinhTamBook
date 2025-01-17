@@ -16,4 +16,6 @@ interface OrderRepositoryInterface extends RepositoryInterface
     public function getTotalRevenue($start_date = null, $end_date = null);
 
     public function getRevenueByTime($start_date, $end_date,$optionShow = 'all');
+
+    public function getRevenueByRange($start_date, $end_date);
 }

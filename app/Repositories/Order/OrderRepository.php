@@ -6,6 +6,7 @@ use App\Mail\OrderStatus;
 use App\Enums\OrderStatus as EnumsOrderStatus;
 use App\Models\Order;
 use App\Repositories\BaseRepository;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -165,6 +166,41 @@ class OrderRepository extends BaseRepository implements OrderRepositoryInterface
 
         return $query->get();
     }
+
+    public function getRevenueByRange($start_date, $end_date)
+    {
+        $start = Carbon::parse($start_date);
+        $end = Carbon::parse($end_date);
+
+        // Tạo nhãn (labels) cho từng ngày
+        $chartV2Labels = [];
+        for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+            $chartV2Labels[] = $date->format('d/m/Y');
+        }
+
+        $query = $this->model->where('status', EnumsOrderStatus::DELIVERED)
+            ->whereBetween('created_at', [$start_date, $end_date])
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total_amount) as revenue'))
+            ->groupBy('date')
+            ->get();
+
+        // Chuyển query thành mảng key-value
+        $revenueMap = $query->pluck('revenue', 'date')->toArray();
+
+        $chartV2Data = [];
+        foreach ($chartV2Labels as $label) {
+            $formattedDate = Carbon::createFromFormat('d/m/Y', $label)->format('Y-m-d');
+            // Lấy doanh thu từ mảng revenueMap, nếu không có thì trả về 0
+            $chartV2Data[] = isset($revenueMap[$formattedDate]) ? (float)$revenueMap[$formattedDate] : 0;
+        }
+
+        return [
+            'labels' => $chartV2Labels,
+            'data' => $chartV2Data,
+        ];
+    }
+
+
 
 
 }
